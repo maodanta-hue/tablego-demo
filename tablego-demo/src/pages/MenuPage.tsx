@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { categories, menuItems, getMenuItemsByCategory } from '../data/menu';
+import { categories, getMenuItemsByCategory } from '../data/menu';
 import MenuCard from '../components/menu/MenuCard';
 
 /**

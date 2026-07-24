@@ -1,7 +1,5 @@
 import { useLanguage } from '../../context/LanguageContext';
 import { languageConfigs } from '../../data/languageConfig';
-import type { Language } from '../../types';
-
 /**
  * 语言切换器
  * 横向排列的语言按钮，点击切换
