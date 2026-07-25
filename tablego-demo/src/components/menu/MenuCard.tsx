@@ -1,83 +1,100 @@
-import { useState } from 'react';
-import type { MenuItem } from '../../types';
+/**
+ * 菜品卡片组件
+ * - 展示图片占位、名称（多语言）、描述、价格
+ * - 点击"加入"按钮触发 onAdd
+ */
 import { useLanguage } from '../../context/LanguageContext';
-import { useOrder } from '../../context/OrderContext';
-import { formatPrice } from '../../hooks/useFormat';
+import type { MenuItem, MultiLangText } from '../../types';
 
 interface Props {
   item: MenuItem;
+  onAdd: () => void;
 }
 
-/**
- * 单个菜品卡片
- * 显示：图片占位、名称、描述、价格、加购按钮
- * 点击加购后按钮变为"已加入"状态，0.6秒恢复
- */
-export default function MenuCard({ item }: Props) {
-  const { t } = useLanguage();
-  const { addToCart } = useOrder();
-  const [added, setAdded] = useState(false);
+export default function MenuCard({ item, onAdd }: Props) {
+  const { t, language } = useLanguage();
 
-  const handleAdd = () => {
-    addToCart(item);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 600);
+  /** 从 MultiLangText 中获取当前语言的文本 */
+  const localizedText = (text: MultiLangText | undefined): string => {
+    if (!text) return '';
+    // 优先当前语言，逐级 fallback
+    switch (language) {
+      case 'vi': return text.vi || text.en || text.zh;
+      case 'zh': return text.zh || text.en || text.vi;
+      case 'en': return text.en || text.vi || text.zh;
+      case 'ko': return text.en || text.vi || text.zh; // 韩文 fallback 到英文
+      case 'ja': return text.en || text.vi || text.zh; // 日文 fallback 到英文
+      default:   return text.en || text.vi || text.zh;
+    }
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden active:scale-[0.98] transition-transform duration-150">
-      {/* 图片占位区 */}
-      <div className="image-placeholder h-32 w-full">
-        <span className="text-3xl">
-          {/* 根据分类展示不同 emoji */}
-          {item.categoryId === 'coffee' && '☕'}
-          {item.categoryId === 'tea' && '🧋'}
-          {item.categoryId === 'dessert' && '🍰'}
-          {item.categoryId === 'food' && '🍜'}
-        </span>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-row items-stretch gap-0 active:scale-[0.99] transition-transform duration-150">
+      {/* 左侧图片占位 */}
+      <div className="w-24 h-24 shrink-0 bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center rounded-l-xl">
+        {item.image ? (
+          <img
+            src={item.image}
+            alt={item.name.en}
+            className="w-full h-full object-cover rounded-l-xl"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+              (e.target as HTMLImageElement).parentElement!.innerHTML =
+                `<span class="text-3xl">${getCategoryEmoji(item.categoryId)}</span>`;
+            }}
+          />
+        ) : (
+          <span className="text-3xl">{getCategoryEmoji(item.categoryId)}</span>
+        )}
       </div>
 
-      {/* 内容区 */}
-      <div className="p-3.5">
-        {/* 标题行：名称 + 热门标签 */}
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="text-sm font-semibold text-gray-800 leading-tight flex-1">
-            {t(item.nameKey)}
-          </h3>
-          {item.popular && (
-            <span className="shrink-0 bg-orange-50 text-orange-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-              {t('menu.popular')}
-            </span>
-          )}
-        </div>
+      {/* 右侧内容 */}
+      <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
+        {/* 名称 */}
+        <h3 className="text-sm font-semibold text-gray-800 leading-tight truncate">
+          {localizedText(item.name)}
+        </h3>
 
         {/* 描述 */}
-        <p className="text-xs text-gray-500 mb-2.5 line-clamp-2">
-          {t(item.descriptionKey)}
-        </p>
+        {item.description && (
+          <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">
+            {localizedText(item.description)}
+          </p>
+        )}
 
-        {/* 底行：价格 + 按钮 */}
-        <div className="flex items-center justify-between">
+        {/* 价格 + 加入按钮 */}
+        <div className="flex items-center justify-between mt-1.5">
           <span className="text-base font-bold text-green-700">
-            {formatPrice(item.price)}
+            {formatPrice(item.price, t('app.currency'))}
           </span>
 
           <button
-            onClick={handleAdd}
-            disabled={added}
-            className={`
-              px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
-              ${
-                added
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-green-600 text-white hover:bg-green-700 active:scale-95'
-              }
-            `}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAdd();
+            }}
+            className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-orange-500 text-white hover:bg-orange-600 active:scale-95 transition-all duration-150 shadow-sm"
           >
-            {added ? `✓ ${t('menu.added')}` : t('menu.addToCart')}
+            + {t('menu.add')}
           </button>
         </div>
       </div>
     </div>
   );
+}
+
+/** 根据分类返回对应 emoji */
+function getCategoryEmoji(categoryId: string): string {
+  const map: Record<string, string> = {
+    coffee: '☕',
+    tea: '🧋',
+    dessert: '🍰',
+    food: '🍜',
+  };
+  return map[categoryId] || '🍽️';
+}
+
+/** 简单价格格式化 */
+function formatPrice(price: number, currency: string): string {
+  return `${currency}${price.toLocaleString()}`;
 }

@@ -1,5 +1,6 @@
 import { useLanguage } from '../context/LanguageContext';
 import { useOrder } from '../context/OrderContext';
+import { getOrders } from '../store';
 import OrderCard from '../components/dashboard/OrderCard';
 
 /**
@@ -10,7 +11,8 @@ import OrderCard from '../components/dashboard/OrderCard';
  */
 export default function OwnerPage() {
   const { t } = useLanguage();
-  const { orders } = useOrder();
+  useOrder(); // keep context available for markOrderCompleted etc
+  const orders = getOrders();
 
   // 分离待处理和已完成订单
   const pendingOrders = orders.filter((o) => o.status === 'pending');

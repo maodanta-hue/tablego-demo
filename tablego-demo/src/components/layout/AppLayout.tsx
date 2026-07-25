@@ -25,7 +25,7 @@ export default function AppLayout() {
       <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {showBack && (
+            {showBack && !isOwner && (
               <NavLink
                 to="/"
                 className="text-gray-500 hover:text-gray-700 active:scale-90 transition-transform"
@@ -36,17 +36,27 @@ export default function AppLayout() {
               </NavLink>
             )}
             <span className="text-base font-bold text-gray-800">
-              {t('app.name')}
+              {isOwner ? t('owner.title') : t('app.name')}
             </span>
           </div>
 
           {/* 老板端入口 */}
-          <NavLink
-            to={isOwner ? '/' : '/owner'}
-            className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            {isOwner ? t('welcome.start') : '👨‍💼'}
-          </NavLink>
+          {!isOwner && (
+            <NavLink
+              to="/admin/login"
+              className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              👨‍💼 {t('owner.title')}
+            </NavLink>
+          )}
+          {isOwner && (
+            <NavLink
+              to="/"
+              className="text-xs text-green-600 font-medium hover:text-green-700 transition-colors"
+            >
+              ← {t('common.back')}
+            </NavLink>
+          )}
         </div>
       </header>
 

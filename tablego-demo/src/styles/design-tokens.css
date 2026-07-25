@@ -1,0 +1,145 @@
+/* ============================================================
+ * TableGo Design System — Design Tokens
+ * Single Source of Truth for all visual properties
+ * ============================================================ */
+
+:root {
+  /* ---- Primary Palette ---- */
+  --color-primary: #E53935;
+  --color-primary-hover: #C62828;
+  --color-primary-light: #FFEBEE;
+  --color-primary-subtle: #FFCDD2;
+
+  /* ---- Neutral Palette ---- */
+  --color-bg: #F7F7F7;
+  --color-surface: #FFFFFF;
+  --color-border: #EEEEEE;
+  --color-border-light: #F5F5F5;
+
+  /* ---- Text Palette ---- */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-text-placeholder: #BDBDBD;
+  --color-text-inverse: #FFFFFF;
+
+  /* ---- Semantic Colors ---- */
+  --color-success: #43A047;
+  --color-success-light: #E8F5E9;
+  --color-warning: #FF9800;
+  --color-warning-light: #FFF3E0;
+  --color-info: #2196F3;
+  --color-info-light: #E3F2FD;
+  --color-error: #E53935;
+  --color-error-light: #FFEBEE;
+
+  /* ---- Order Status Colors ---- */
+  --color-status-pending: #FF9800;
+  --color-status-pending-bg: #FFF3E0;
+  --color-status-preparing: #2196F3;
+  --color-status-preparing-bg: #E3F2FD;
+  --color-status-completed: #43A047;
+  --color-status-completed-bg: #E8F5E9;
+
+  /* ---- Spacing ---- */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+
+  /* ---- Border Radius ---- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* ---- Shadows ---- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.16);
+
+  /* ---- Typography ---- */
+  --font-family: 'Inter', 'Roboto', 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 28px;
+  --font-size-3xl: 32px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ---- Layout ---- */
+  --header-height: 56px;
+  --bottom-cart-height: 72px;
+  --category-sidebar-width: 90px;
+  --max-content-width: 430px;
+
+  /* ---- Transitions ---- */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* ---- Z-Index ---- */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+  --z-tooltip: 500;
+}
+
+/* ---- Reset & Base ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  outline: none;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

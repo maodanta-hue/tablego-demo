@@ -1,83 +1,154 @@
+/**
+ * CartPage — 确认订单页面（Confirm Order）
+ * 顶部返回按钮 + 商品列表 + Remark + 底部 Total + Submit
+ */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useOrder } from '../context/OrderContext';
-import CartItemRow from '../components/cart/CartItemRow';
-import { formatPrice } from '../hooks/useFormat';
+import type { Language } from '../types';
+import type { MultiLangText } from '../types/menu';
 
-/**
- * 购物车页
- * - 展示购物车所有商品
- * - 支持加减数量
- * - 显示桌号输入（默认 A1）
- * - 提交订单
- */
+function getLocalName(name: MultiLangText, lang: Language): string {
+  const map: Record<string, string> = { zh: name.zh, en: name.en, vi: name.vi, ko: (name as any).ko ?? name.en, ja: (name as any).ja ?? name.en };
+  return map[lang] || name.en;
+}
+
 export default function CartPage() {
-  const { t } = useLanguage();
-  const { cart, cartTotal, cartCount, submitOrder } = useOrder();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const [tableNo, setTableNo] = useState('A1');
+  const { cart, removeFromCart, updateQuantity, cartTotal, cartCount, submitOrder, currentTable } = useOrder();
+  const [remark, setRemark] = useState('');
 
   const handleSubmit = () => {
-    if (cart.length === 0) return;
-    submitOrder(tableNo.trim() || 'A1');
-    navigate('/order-success');
+    const orderId = submitOrder();
+    if (orderId) {
+      navigate(`/order-success?orderId=${orderId}&table=${encodeURIComponent(currentTable)}`);
+    }
   };
 
   return (
-    <div className="px-4 py-4">
-      {/* 页面标题 */}
-      <h2 className="text-xl font-bold text-gray-800 mb-4">{t('cart.title')}</h2>
+    <div className="flex flex-col h-screen bg-[#F7F7F7] max-w-lg mx-auto relative">
+      {/* Header */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="w-9 h-9 rounded-[10px] bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition"
+        >
+          <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div>
+          <h1 className="text-[18px] font-bold text-gray-900">{t('confirmOrder') || 'Confirm Order'}</h1>
+          <p className="text-[12px] text-gray-400">{t('table') || 'Table'} {currentTable}</p>
+        </div>
+      </div>
 
+      {/* Content */}
       {cart.length === 0 ? (
-        /* 空购物车 */
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+        <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
           <span className="text-5xl mb-4">🛒</span>
-          <p className="text-sm font-medium mb-1">{t('cart.empty')}</p>
-          <p className="text-xs">{t('cart.emptyHint')}</p>
+          <p className="text-[15px] font-medium">{t('cartEmpty') || 'Cart is empty'}</p>
+          <button
+            onClick={() => navigate('/menu')}
+            className="mt-4 h-10 px-6 rounded-[12px] bg-[#E53935] text-white text-[14px] font-semibold hover:bg-[#C62828] transition"
+          >
+            {t('backToMenu') || 'Back to Menu'}
+          </button>
         </div>
       ) : (
-        <>
-          {/* 桌号输入 */}
-          <div className="flex items-center gap-3 mb-4 bg-gray-50 rounded-xl px-4 py-3">
-            <span className="text-sm font-medium text-gray-600">{t('cart.tableNo')}:</span>
-            <input
-              type="text"
-              value={tableNo}
-              onChange={(e) => setTableNo(e.target.value)}
-              className="flex-1 bg-transparent text-sm font-semibold text-gray-800 outline-none"
-              placeholder="e.g. A1, Table 5"
-            />
-          </div>
+        <div className="flex-1 overflow-y-auto">
+          {/* Items */}
+          <div className="px-4 py-3 space-y-2">
+            {cart.map((ci) => (
+              <div
+                key={ci.id}
+                className="flex gap-3 bg-white rounded-[14px] p-3 shadow-sm border border-gray-50"
+              >
+                {/* Image */}
+                <div className="w-[64px] h-[64px] rounded-[10px] overflow-hidden flex-shrink-0 bg-gray-100">
+                  <img
+                    src={ci.image}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
 
-          {/* 商品列表 */}
-          <div className="bg-white rounded-xl border border-gray-100 px-4 mb-4">
-            {cart.map((item) => (
-              <CartItemRow key={item.id} item={item} />
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[14px] font-semibold text-gray-900 line-clamp-1">
+                    {getLocalName(ci.name, language)}
+                  </h3>
+                  <p className="text-[12px] text-gray-400 mt-0.5">
+                    ¥{ci.price.toFixed(2)} x {ci.quantity}
+                  </p>
+                  <div className="flex items-center justify-between mt-2">
+                    {/* Quantity controls */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => ci.quantity > 1 ? updateQuantity(ci.id, ci.quantity - 1) : removeFromCart(ci.id)}
+                        className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition text-[16px] leading-none"
+                      >
+                        {ci.quantity > 1 ? '−' : '🗑'}
+                      </button>
+                      <span className="text-[14px] font-semibold text-gray-800 min-w-[20px] text-center">
+                        {ci.quantity}
+                      </span>
+                      <button
+                        onClick={() => updateQuantity(ci.id, ci.quantity + 1)}
+                        className="w-7 h-7 rounded-full bg-[#E53935] flex items-center justify-center text-white hover:bg-[#C62828] transition text-[16px] leading-none"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Item total */}
+                    <span className="text-[15px] font-bold text-[#E53935]">
+                      ¥{(ci.price * ci.quantity).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
 
-          {/* 总计 + 提交按钮 */}
-          <div className="sticky bottom-0 bg-white pt-2 pb-4">
-            <div className="flex items-center justify-between mb-4 px-1">
-              <span className="text-sm text-gray-500">
-                {cartCount} {cartCount > 1 ? t('cart.items') : t('cart.item')}
-              </span>
-              <span className="text-lg font-bold text-green-700">
-                {t('cart.total')}: {formatPrice(cartTotal)}
-              </span>
+          {/* Remark */}
+          <div className="px-4 py-3">
+            <div className="bg-white rounded-[14px] p-4 shadow-sm border border-gray-50">
+              <p className="text-[13px] font-semibold text-gray-700 mb-2">{t('remark') || 'Remark'}</p>
+              <input
+                type="text"
+                value={remark}
+                onChange={(e) => setRemark(e.target.value)}
+                placeholder={t('remarkPlaceholder') || 'Add a note...'}
+                className="w-full h-10 px-3 rounded-[10px] bg-[#F3F3F3] text-[14px] text-gray-800 placeholder-gray-400 border-none outline-none focus:ring-2 focus:ring-[#E53935]/20 transition"
+              />
             </div>
+          </div>
 
+          {/* Bottom padding */}
+          <div className="h-28" />
+        </div>
+      )}
+
+      {/* Bottom Bar */}
+      {cart.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-[0_-4px_12px_rgba(0,0,0,0.04)] z-50">
+          <div className="flex items-center px-4 py-3 gap-3 max-w-lg mx-auto">
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] text-gray-400">{t('total') || 'Total'} ({cartCount} items)</p>
+              <p className="text-[20px] font-bold text-gray-900">¥{cartTotal.toFixed(2)}</p>
+            </div>
             <button
               onClick={handleSubmit}
-              className="w-full py-4 bg-green-600 text-white text-base font-bold rounded-2xl
-                         shadow-lg shadow-green-200 hover:bg-green-700 active:scale-[0.97]
-                         transition-all duration-200"
+              className="h-[52px] px-8 rounded-[14px] bg-[#E53935] text-white text-[15px] font-semibold hover:bg-[#C62828] active:scale-95 shadow-md shadow-red-200 transition-all"
             >
-              {t('cart.checkout')} — {formatPrice(cartTotal)}
+              {t('submitOrder') || 'Submit Order'}
             </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

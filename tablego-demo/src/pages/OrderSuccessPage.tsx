@@ -1,62 +1,58 @@
-import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../context/LanguageContext';
-import { useOrder } from '../context/OrderContext';
-
 /**
  * 下单成功页
- * - 动画提示成功
- * - 显示订单号和桌号
+ * - 显示成功动画
+ * - 从 URL 参数读取订单号和桌号
  * - 提示等待处理
- * - 可继续点餐
  */
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
+
 export default function OrderSuccessPage() {
   const { t } = useLanguage();
-  const { orders } = useOrder();
   const navigate = useNavigate();
-
-  // 获取最新一条订单
-  const latestOrder = orders[0];
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get('orderId') || 'N/A';
+  const tableNo = searchParams.get('table') || 'A1';
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-120px)] px-6 py-8">
-      {/* 成功动画（简单用 emoji） */}
-      <div className="text-7xl mb-4 animate-bounce">🎉</div>
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-56px)] px-6 py-8">
+      {/* 成功动画 */}
+      <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mb-6">
+        <span className="text-5xl animate-bounce">🎉</span>
+      </div>
 
       {/* 标题 */}
-      <h1 className="text-2xl font-bold text-gray-800 text-center mb-3">
+      <h1 className="text-2xl font-bold text-gray-800 text-center mb-2">
         {t('success.title')}
       </h1>
 
-      {/* 提示信息 */}
-      <p className="text-sm text-gray-500 text-center mb-6">
+      {/* 提示 */}
+      <p className="text-sm text-gray-500 text-center mb-8">
         {t('success.message')}
       </p>
 
       {/* 订单信息卡片 */}
-      {latestOrder && (
-        <div className="w-full max-w-xs bg-green-50 rounded-2xl px-6 py-5 mb-6">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-sm text-gray-500">{t('success.orderId')}</span>
-            <span className="text-sm font-bold text-gray-800">{latestOrder.id}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">{t('success.table')}</span>
-            <span className="text-sm font-bold text-gray-800">{latestOrder.tableNo}</span>
-          </div>
+      <div className="w-full max-w-xs bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100 px-6 py-5 mb-6">
+        <div className="flex justify-between items-center mb-3 pb-3 border-b border-green-100">
+          <span className="text-sm text-gray-500">{t('success.orderId')}</span>
+          <span className="text-base font-bold text-green-700">{orderId}</span>
         </div>
-      )}
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-gray-500">{t('success.table')}</span>
+          <span className="text-base font-bold text-gray-800">{tableNo}</span>
+        </div>
+      </div>
 
-      {/* 温馨提醒 */}
-      <p className="text-xs text-gray-400 text-center max-w-xs mb-8">
+      {/* 提示文字 */}
+      <p className="text-xs text-gray-400 text-center max-w-xs mb-8 leading-relaxed">
         {t('success.note')}
       </p>
 
-      {/* 继续点餐按钮 */}
+      {/* 继续点餐 */}
       <button
         onClick={() => navigate('/menu')}
-        className="w-full max-w-xs py-4 bg-green-600 text-white text-base font-bold rounded-2xl
-                   shadow-lg shadow-green-200 hover:bg-green-700 active:scale-[0.97]
-                   transition-all duration-200"
+        className="w-full max-w-xs py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-base font-bold rounded-2xl
+                   shadow-lg shadow-green-200 hover:shadow-xl active:scale-[0.97] transition-all duration-200"
       >
         {t('success.backToMenu')}
       </button>

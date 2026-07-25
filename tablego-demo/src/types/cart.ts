@@ -2,8 +2,9 @@
 export interface CartItem {
   id: string;
   menuItemId: string;
-  nameKey: string;
+  name: { zh: string; en: string; vi: string };  // 三语名称
   price: number;
   quantity: number;
   image: string;
+  remark?: string;           // 备注
 }

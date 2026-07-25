@@ -1,9 +1,6 @@
-/** 格式化越南盾价格 */
+/** 格式化价格（人民币） */
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(price);
+  return `¥${price.toLocaleString('zh-CN')}`;
 }
 
 /** 格式化时间 */

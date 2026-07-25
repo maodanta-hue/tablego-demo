@@ -1,21 +1,41 @@
+/**
+ * 老板端订单卡片
+ * 显示：桌号、时间、商品明细（多语言）、总价、状态、完成按钮
+ */
 import type { Order } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { useOrder } from '../../context/OrderContext';
-import { formatPrice, formatTime } from '../../hooks/useFormat';
 
 interface Props {
   order: Order;
 }
 
-/**
- * 老板端订单卡片
- * 显示：桌号、时间、商品清单、总价、状态、完成按钮
- */
 export default function OrderCard({ order }: Props) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { markOrderCompleted } = useOrder();
 
   const isPending = order.status === 'pending';
+
+  /** 从多语言文本中获取当前语言的文本 */
+  const localizedText = (text: Record<string, string>): string => {
+    if (!text) return '';
+    switch (language) {
+      case 'vi': return text.vi || text.en || text.zh;
+      case 'zh': return text.zh || text.en || text.vi;
+      case 'en': return text.en || text.vi || text.zh;
+      default:   return text.en || text.vi || text.zh;
+    }
+  };
+
+  /** 格式化时间：ISO → 简短显示 */
+  const formatTime = (iso: string): string => {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return iso;
+    }
+  };
 
   return (
     <div
@@ -53,14 +73,23 @@ export default function OrderCard({ order }: Props) {
       {/* 商品列表 */}
       <div className="space-y-1.5 mb-3">
         {order.items.map((item, idx) => (
-          <div key={idx} className="flex justify-between text-sm">
-            <span className="text-gray-700 flex-1">
-              {t(item.nameKey)}
-              <span className="text-gray-400 ml-1">× {item.quantity}</span>
-            </span>
-            <span className="text-gray-600 font-medium">
-              {formatPrice(item.price * item.quantity)}
-            </span>
+          <div key={idx} className="text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-700 flex-1">
+                {localizedText(item.name)}
+                <span className="text-gray-400 ml-1">× {item.quantity}</span>
+              </span>
+              <span className="text-gray-600 font-medium">
+                {t('app.currency')}{(item.price * item.quantity).toLocaleString()}
+              </span>
+            </div>
+            {item.remark && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">
+                  📝 {item.remark}
+                </span>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -70,7 +99,7 @@ export default function OrderCard({ order }: Props) {
         <div>
           <span className="text-xs text-gray-400">{t('owner.total')}: </span>
           <span className="text-base font-bold text-green-700">
-            {formatPrice(order.totalPrice)}
+            {t('app.currency')}{order.totalPrice.toLocaleString()}
           </span>
         </div>
 
