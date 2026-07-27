@@ -44,7 +44,7 @@ export default function BottomCart({ onReviewOrder }: Props) {
         {/* Middle: Total */}
         <div className="flex-1 min-w-0">
           <p className="text-[12px] text-gray-400 font-medium">{t('total') || 'Total'}</p>
-          <p className="text-[18px] font-bold text-gray-900">¥{cartTotal.toFixed(2)}</p>
+          <p className="text-[18px] font-bold text-[#E53935]">{t('app.currency')}{cartTotal.toLocaleString()}</p>
         </div>
 
         {/* Right: Review Order Button — adjusted height */}

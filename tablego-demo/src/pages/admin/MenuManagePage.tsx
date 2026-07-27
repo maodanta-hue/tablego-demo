@@ -5,15 +5,10 @@
 import { useState } from 'react';
 import { getMenuItems, getCategories, saveMenuItemsList, generateId } from '../../store';
 import type { MenuItem, MenuCategory } from '../../types';
-import type { MultiLangText } from '../../types/menu';
 import { formatPrice } from '../../hooks/useFormat';
 import { useLanguage } from '../../context/LanguageContext';
+import { localizedText } from '../../utils/i18n';
 import type { Language } from '../../types';
-
-function getLocalName(name: MultiLangText, lang: Language): string {
-  const map: Record<string, string> = { zh: name.zh, en: name.en, vi: name.vi, ko: (name as any).ko ?? name.en, ja: (name as any).ja ?? name.en };
-  return map[lang] || name.en;
-}
 
 export default function MenuManagePage() {
   const { language } = useLanguage();
@@ -89,7 +84,7 @@ export default function MenuManagePage() {
             }`}
           >
             <span>{cat.icon}</span>
-            <span>{getLocalName(cat.name, language)}</span>
+            <span>{localizedText(cat.name, language)}</span>
           </button>
         ))}
       </div>
@@ -128,7 +123,7 @@ export default function MenuManagePage() {
                           />
                           <div>
                             <p className="text-gray-800 font-medium text-[13px]">
-                              {getLocalName(item.name, language)}
+                              {localizedText(item.name, language)}
                             </p>
                             <p className="text-[11px] text-gray-400">{item.id}</p>
                           </div>
@@ -136,7 +131,7 @@ export default function MenuManagePage() {
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-gray-500 text-[12px]">
-                          {cat?.icon} {getLocalName(cat?.name!, language)}
+                          {cat?.icon} {localizedText(cat?.name!, language)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right font-semibold text-gray-700">
@@ -414,7 +409,7 @@ function MenuItemForm({
             >
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.icon} {getLocalName(cat.name, language)}
+                  {cat.icon} {localizedText(cat.name, language)}
                 </option>
               ))}
             </select>

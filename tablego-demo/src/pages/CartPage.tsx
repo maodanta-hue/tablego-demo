@@ -6,13 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useOrder } from '../context/OrderContext';
-import type { Language } from '../types';
-import type { MultiLangText } from '../types/menu';
-
-function getLocalName(name: MultiLangText, lang: Language): string {
-  const map: Record<string, string> = { zh: name.zh, en: name.en, vi: name.vi, ko: (name as any).ko ?? name.en, ja: (name as any).ja ?? name.en };
-  return map[lang] || name.en;
-}
+import { localizedText } from '../utils/i18n';
 
 export default function CartPage() {
   const { t, language } = useLanguage();
@@ -30,7 +24,7 @@ export default function CartPage() {
     if (orderId) {
       navigate(`/order-success?orderId=${orderId}&table=${encodeURIComponent(currentTable)}`);
     }
-    setTimeout(() => setIsSubmitting(false), 1000);
+    // 导航后 isSubmitting 由组件卸载自然重置，不需要 setTimeout
   };
 
   return (
@@ -85,7 +79,7 @@ export default function CartPage() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <h3 className="text-[14px] font-semibold text-gray-900 line-clamp-1">
-                    {getLocalName(ci.name, language)}
+                    {localizedText(ci.name, language)}
                   </h3>
                   <p className="text-[12px] text-gray-400 mt-0.5">
                     ¥{ci.price.toFixed(2)} x {ci.quantity}

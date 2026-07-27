@@ -36,7 +36,12 @@ function translate(lang: Language, key: string, params?: Record<string, string |
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>(defaultLanguage);
+  const [language, setLanguageState] = useState<Language>(defaultLanguage);
+
+  const setLanguage = useCallback((lang: Language) => {
+    console.log('setLanguage 被调用:', lang);
+    setLanguageState(lang);
+  }, []);
 
   const t = useCallback(
     (key: string, params?: Record<string, string | number>) => {

@@ -79,12 +79,12 @@ function specsMatch(a: CartItem, b: CartItem): boolean {
   if ((a.temperature ?? 'none') !== (b.temperature ?? 'none')) return false;
   if ((a.sugar ?? 'none') !== (b.sugar ?? 'none')) return false;
 
-  // 加料比较：长度 + 每个加料的 id 和数量
-  const aTops = a.toppings ?? [];
-  const bTops = b.toppings ?? [];
+  const aTops = (a.toppings ?? []).sort((x, y) => x.id.localeCompare(y.id));
+  const bTops = (b.toppings ?? []).sort((x, y) => x.id.localeCompare(y.id));
   if (aTops.length !== bTops.length) return false;
   for (let i = 0; i < aTops.length; i++) {
-    if (aTops[i].id !== bTops[i].id || aTops[i].quantity !== bTops[i].quantity) return false;
+    if (aTops[i].id !== bTops[i].id) return false;
+    if (aTops[i].quantity !== bTops[i].quantity) return false;
   }
   return true;
 }

@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useOrder } from '../context/OrderContext';
 import { getMenuItems } from '../store';
-import type { MultiLangText } from '../types';
+import { localizedText } from '../utils/i18n';
+
 
 /**
  * 菜品详情页
@@ -27,19 +28,6 @@ const iceOptions: { value: IceLevel; key: string }[] = [
   { value: 'normal', key: 'menuDetail.iceNormal' },
   { value: 'extra', key: 'menuDetail.iceExtra' },
 ];
-
-/** 从 MultiLangText 中获取当前语言的文本 */
-function localizedText(text: MultiLangText | undefined, lang: string): string {
-  if (!text) return '';
-  switch (lang) {
-    case 'vi': return text.vi || text.en || text.zh;
-    case 'zh': return text.zh || text.en || text.vi;
-    case 'en': return text.en || text.vi || text.zh;
-    case 'ko': return text.en || text.vi || text.zh;
-    case 'ja': return text.en || text.vi || text.zh;
-    default:   return text.en || text.vi || text.zh;
-  }
-}
 
 /** 简单价格格式化 */
 function formatPrice(price: number): string {
@@ -77,9 +65,7 @@ export default function MenuDetailPage() {
   const handleAddToCart = () => {
     addToCart(item, quantity);
     setAdded(true);
-    setTimeout(() => {
-      navigate('/menu');
-    }, 600);
+    navigate('/menu');
   };
 
   return (

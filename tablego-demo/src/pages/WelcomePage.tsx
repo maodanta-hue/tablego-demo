@@ -1,13 +1,12 @@
 /**
  * 欢迎页（首页）
  * - 餐厅 Logo、名称、欢迎语
- * - 从 tablego_db 动态读取桌号列表
- * - 支持 URL 参数 ?table=:tableNo 直接进入
- * - 语言切换
+ * - 从 storage 动态读取桌号列表（新版）
+ * - 底部语言切换（旧版风格）
  * - 老板端入口
  */
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import LanguageSwitcher from '../components/common/LanguageSwitcher';
 import { getSlice } from '../services/storage';
@@ -18,44 +17,18 @@ const TABLES_KEY = 'tables';
 export default function WelcomePage() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [tables, setTables] = useState<TableInfo[]>(() => getSlice<TableInfo[]>(TABLES_KEY, []));
 
   // 实时同步后台桌号变化
   useEffect(() => {
     const refresh = () => setTables(getSlice<TableInfo[]>(TABLES_KEY, []));
     refresh();
-    // 每次页面激活时重新读取
     const interval = setInterval(refresh, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  // 支持 URL 参数直接进入: ?table=A08
-  useEffect(() => {
-    const tableParam = searchParams.get('table');
-    if (!tableParam) return;
-
-    const upperNo = tableParam.toUpperCase();
-    const table = tables.find((t) => t.number === upperNo);
-
-    if (!table) {
-      // 无效桌号，忽略参数
-      return;
-    }
-
-    if (table.status !== 'active') {
-      // 已停用，忽略参数
-      return;
-    }
-
-    // 有效桌号，自动进入菜单
-    navigate(`/menu?table=${encodeURIComponent(upperNo)}`, { replace: true });
-  }, [searchParams, tables, navigate]);
-
   const activeTables = tables.filter((t) => t.status === 'active');
   const disabledTables = tables.filter((t) => t.status === 'disabled');
-  const totalActive = activeTables.length;
-  const totalDisabled = disabledTables.length;
 
   const handleEnterMenu = (tableNo: string) => {
     navigate(`/menu?table=${encodeURIComponent(tableNo)}`);
@@ -92,19 +65,17 @@ export default function WelcomePage() {
           </div>
         </div>
 
-        {/* 桌号选择 */}
+        {/* 桌号选择 - 新版动态加载 */}
         <div className="w-full max-w-sm mb-6">
           {tables.length === 0 ? (
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
-              <div className="text-5xl mb-3">🪑</div>
-              <p className="text-gray-500 font-semibold mb-1">No tables available</p>
-              <p className="text-gray-400 text-[13px]">Please contact restaurant.</p>
+            <div className="text-center py-8 text-gray-400">
+              <p>暂无桌号，请先在后台添加</p>
             </div>
           ) : (
             <>
               <p className="text-xs text-gray-400 text-center mb-3">
-                📲 {totalActive} Tables Available
-                {totalDisabled > 0 && ` · ${totalDisabled} Unavailable`}
+                📲 {activeTables.length} 个可用桌号
+                {disabledTables.length > 0 && ` · ${disabledTables.length} 个已停用`}
               </p>
               <div className="grid grid-cols-2 gap-3">
                 {activeTables.map((table) => (
@@ -138,7 +109,7 @@ export default function WelcomePage() {
         </div>
       </div>
 
-      {/* 下部：语言切换 + 老板入口 */}
+      {/* 下部：语言切换 + 老板入口（旧版风格） */}
       <div className="flex flex-col items-center w-full max-w-sm">
         <div className="w-full mb-4">
           <p className="text-xs text-gray-400 text-center mb-3">🌐 Language</p>

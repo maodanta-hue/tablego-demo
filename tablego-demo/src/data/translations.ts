@@ -24,6 +24,7 @@ const translations: Translations = {
     'app.name': 'Nhà hàng Đà Nẵng',
     'app.tagline': 'Ẩm thực Việt Nam chính gốc',
     'app.loading': 'Đang tải...',
+    'app.currency': '₫',
 
     // 欢迎页
     'welcome.title': 'Chào mừng đến với',
@@ -114,6 +115,7 @@ const translations: Translations = {
     'app.name': '岘港餐厅',
     'app.tagline': '正宗越南美食',
     'app.loading': '加载中...',
+    'app.currency': '￥',
 
     'welcome.title': '欢迎光临',
     'welcome.subtitle': '岘港餐厅',
@@ -196,6 +198,7 @@ const translations: Translations = {
     'app.name': 'Da Nang Restaurant',
     'app.tagline': 'Authentic Vietnamese Cuisine',
     'app.loading': 'Loading...',
+    'app.currency': '₫',
 
     'welcome.title': 'Welcome to',
     'welcome.subtitle': 'Da Nang Restaurant',
@@ -278,6 +281,7 @@ const translations: Translations = {
     'app.name': '다낭 레스토랑',
     'app.tagline': '정통 베트남 요리',
     'app.loading': '로딩 중...',
+    'app.currency': '₩',
 
     'welcome.title': '어서 오세요',
     'welcome.subtitle': '다낭 레스토랑',
@@ -346,6 +350,7 @@ const translations: Translations = {
     'app.name': 'ダナンレストラン',
     'app.tagline': '本格ベトナム料理',
     'app.loading': '読み込み中...',
+    'app.currency': '¥',
 
     'welcome.title': 'ようこそ',
     'welcome.subtitle': 'ダナンレストラン',

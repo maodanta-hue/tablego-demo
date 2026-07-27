@@ -5,6 +5,7 @@
  */
 import type { CartItem } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
+import { localizedText } from '../../utils/i18n';
 
 interface Props {
   item: CartItem;
@@ -15,23 +16,12 @@ interface Props {
 export default function CartItemRow({ item, onQuantityChange, onRemove }: Props) {
   const { t, language } = useLanguage();
 
-  /** 从 MultiLangText 中获取当前语言的文本 */
-  const localizedText = (text: Record<string, string> | undefined): string => {
-    if (!text) return '';
-    switch (language) {
-      case 'vi': return text.vi || text.en || text.zh;
-      case 'zh': return text.zh || text.en || text.vi;
-      case 'en': return text.en || text.vi || text.zh;
-      default:   return text.en || text.vi || text.zh;
-    }
-  };
-
   return (
     <div className="flex items-start gap-3 py-3 border-b border-gray-50 last:border-0">
       {/* 商品信息 */}
       <div className="flex-1 min-w-0">
         <h4 className="text-sm font-medium text-gray-800 truncate">
-          {localizedText(item.name)}
+          {localizedText(item.name, language)}
         </h4>
         <p className="text-xs text-gray-400 mt-0.5">
           {t('app.currency')}{item.price.toLocaleString()} / {t('cart.item')}

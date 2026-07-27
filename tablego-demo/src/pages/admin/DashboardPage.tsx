@@ -116,10 +116,8 @@ export default function DashboardPage() {
       });
     }
 
-    setTimeout(() => {
-      setOrders(getOrders());
-      setLoading(false);
-    }, 300);
+    setOrders(getOrders());
+    setLoading(false);
   }, []);
 
   return (

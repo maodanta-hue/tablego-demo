@@ -5,6 +5,7 @@
 import type { Order } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { useOrder } from '../../context/OrderContext';
+import { localizedText } from '../../utils/i18n';
 
 interface Props {
   order: Order;
@@ -15,17 +16,6 @@ export default function OrderCard({ order }: Props) {
   const { markOrderCompleted } = useOrder();
 
   const isPending = order.status === 'pending';
-
-  /** 从多语言文本中获取当前语言的文本 */
-  const localizedText = (text: Record<string, string>): string => {
-    if (!text) return '';
-    switch (language) {
-      case 'vi': return text.vi || text.en || text.zh;
-      case 'zh': return text.zh || text.en || text.vi;
-      case 'en': return text.en || text.vi || text.zh;
-      default:   return text.en || text.vi || text.zh;
-    }
-  };
 
   /** 格式化时间：ISO → 简短显示 */
   const formatTime = (iso: string): string => {
@@ -76,7 +66,7 @@ export default function OrderCard({ order }: Props) {
           <div key={idx} className="text-sm">
             <div className="flex justify-between">
               <span className="text-gray-700 flex-1">
-                {localizedText(item.name)}
+                {localizedText(item.name, language)}
                 <span className="text-gray-400 ml-1">× {item.quantity}</span>
               </span>
               <span className="text-gray-600 font-medium">

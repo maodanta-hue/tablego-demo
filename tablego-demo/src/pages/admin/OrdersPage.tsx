@@ -76,10 +76,8 @@ export default function OrdersPage() {
       });
     });
 
-    setTimeout(() => {
-      setOrders(getOrders());
-      setLoading(false);
-    }, 300);
+    setOrders(getOrders());
+    setLoading(false);
   }, []);
 
   /** 状态对应样式 */

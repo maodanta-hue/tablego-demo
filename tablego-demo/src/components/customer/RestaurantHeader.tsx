@@ -1,112 +1,116 @@
 /**
- * RestaurantHeader — 餐厅信息头部（商业级）
- * 
- * 布局：
- * - 背景图 180px + 模糊效果 + 半透明黑色遮罩
- * - 左侧 Logo + 中间餐厅名/描述/营业状态/桌号 + 右上语言切换
- * - 下方 Tab 导航：Menu / My Orders（红色下划线）
+ * RestaurantHeader — 原岘港咖啡馆风格
+ *
+ * 四行固定布局：
+ * 1. 店名（左） + 标语（右）
+ * 2. 营业状态 + 桌号 + 🌐语言切换（右上角）
+ * 3. Tab 切换（Menu / My Orders）
+ * 4. 搜索框
  */
 import { useLanguage } from '../../context/LanguageContext';
-import { useOrder } from '../../context/OrderContext';
 import { getRestaurantInfo } from '../../store/restaurantStore';
-import LanguageSwitcher from '../common/LanguageSwitcher';
+import { localizedText } from '../../utils/i18n';
+import { useState } from 'react';
 
 interface Props {
+  tableNo: string;
   activeTab: 'menu' | 'orders';
   onTabChange: (tab: 'menu' | 'orders') => void;
+  onSearch: (query: string) => void;
 }
 
-export default function RestaurantHeader({ activeTab, onTabChange }: Props) {
-  const { t } = useLanguage();
-  const { currentTable } = useOrder();
+export default function RestaurantHeader({
+  tableNo,
+  activeTab,
+  onTabChange,
+  onSearch,
+}: Props) {
+  const { t, language } = useLanguage();
   const restaurant = getRestaurantInfo();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const bgImage = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop';
+  const restaurantName = localizedText(restaurant.name, language);
+  const restaurantDesc = localizedText(restaurant.description, language);
+
+  const handleSearch = (value: string) => {
+    setSearchQuery(value);
+    onSearch(value);
+  };
 
   return (
-    <div className="flex-shrink-0">
-      {/* ===== Hero Section with Background ===== */}
-      <div className="relative h-[180px] overflow-hidden">
-        {/* Background Image with blur */}
-        <img
-          src={bgImage}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover scale-110"
-          style={{ filter: 'blur(5px)' }}
-        />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/60" />
+    <div className="flex-shrink-0 bg-white">
+      {/* === 第一行：店名（左） + 标语（右） === */}
+      <div className="flex items-center justify-between px-4 pt-3 pb-1">
+        <h1 className="text-[17px] font-bold text-[#1A1A1A] truncate pr-2">
+          {restaurantName || '岘港咖啡馆'}
+        </h1>
+        <p className="text-[12px] text-[#666666] flex-shrink-0">
+          {restaurantDesc || '正宗越南美食，欢迎光临'}
+        </p>
+      </div>
 
-        {/* Content */}
-        <div className="relative z-10 h-full flex items-start px-5 pt-5">
-          {/* Left: Logo */}
-          <div className="flex-shrink-0 w-[56px] h-[56px] rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl border border-white/20 shadow-lg">
-            <span>{restaurant.logo}</span>
-          </div>
-
-          {/* Center: Name & Info */}
-          <div className="flex-1 min-w-0 ml-3 mt-1">
-            <h1 className="text-[22px] font-bold text-white leading-tight truncate">
-              {restaurant.name.zh || t('restaurantName')}
-            </h1>
-            <p className="text-[12px] text-white/70 mt-0.5 truncate">
-              {restaurant.description.zh || t('restaurantDesc')}
-            </p>
-            <div className="flex items-center gap-4 mt-2">
-              {/* Open Status */}
-              <div className="flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${restaurant.open ? 'bg-[#4CAF50]' : 'bg-gray-400'} shadow-sm`} />
-                <span className={`text-[12px] font-medium ${restaurant.open ? 'text-[#81C784]' : 'text-gray-400'}`}>
-                  {restaurant.open ? (t('openNow') || 'Open Now') : (t('closed') || 'Closed')}
-                </span>
-              </div>
-              {/* Table No */}
-              <div className="flex items-center gap-1 text-white/70">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="text-[12px] font-medium">
-                  {(t('table') || 'Table')} {currentTable}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Language Switch */}
-          <div className="flex-shrink-0 ml-2 self-start">
-            <LanguageSwitcher minimal />
-          </div>
+      {/* === 第二行：营业状态 + 桌号 + 🌐语言切换（右上角） === */}
+      <div className="flex items-center px-4 py-1">
+        <div className="flex items-center gap-4">
+          <span className="text-[12px] text-[#2E7D32] font-medium">
+            ● {t('openNow') || 'Open Now'}
+          </span>
+          <span className="text-[12px] text-[#666666]">
+            {t('table') || 'Table'} {tableNo}
+          </span>
         </div>
       </div>
 
-      {/* ===== Tab Navigation ===== */}
-      <div className="flex bg-white border-b border-gray-100">
+      {/* === 第三行：Tab 切换（Menu / My Orders） === */}
+      <div className="flex border-b border-[#F0F0F0]">
         <button
           onClick={() => onTabChange('menu')}
-          className={`flex-1 h-[46px] text-[15px] font-medium relative transition-colors ${
-            activeTab === 'menu'
-              ? 'text-[#E53935]'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
+          className={`flex-1 py-2.5 text-[14px] font-medium transition-colors
+            ${activeTab === 'menu'
+              ? 'text-[#E53935] border-b-[2px] border-[#E53935]'
+              : 'text-[#999999] hover:text-[#666666]'
+            }`}
         >
           {t('menu') || 'Menu'}
-          {activeTab === 'menu' && (
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-[3px] bg-[#E53935] rounded-full" />
-          )}
         </button>
         <button
           onClick={() => onTabChange('orders')}
-          className={`flex-1 h-[46px] text-[15px] font-medium relative transition-colors ${
-            activeTab === 'orders'
-              ? 'text-[#E53935]'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
+          className={`flex-1 py-2.5 text-[14px] font-medium transition-colors
+            ${activeTab === 'orders'
+              ? 'text-[#E53935] border-b-[2px] border-[#E53935]'
+              : 'text-[#999999] hover:text-[#666666]'
+            }`}
         >
           {t('myOrders') || 'My Orders'}
-          {activeTab === 'orders' && (
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-[3px] bg-[#E53935] rounded-full" />
-          )}
         </button>
+      </div>
+
+      {/* === 第四行：搜索框 === */}
+      <div className="px-4 py-2.5">
+        <div className="relative">
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999999]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder={t('searchMenu') || 'Search menu...'}
+            className="w-full h-10 pl-9 pr-4 rounded-[20px] bg-[#F3F3F3] text-[14px] text-[#1A1A1A]
+                       placeholder-[#999999] border-none outline-none
+                       focus:ring-2 focus:ring-[#2E7D32]/20 transition-all"
+          />
+        </div>
       </div>
     </div>
   );

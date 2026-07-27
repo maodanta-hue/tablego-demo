@@ -7,6 +7,8 @@
  * - 当前分类左侧红色竖线，文字加粗红色
  * - 不使用按钮样式，像微信点餐一样
  */
+import { useLanguage } from '../../context/LanguageContext';
+import { localizedText } from '../../utils/i18n';
 import type { MenuCategory } from '../../types';
 
 interface Props {
@@ -16,6 +18,7 @@ interface Props {
 }
 
 export default function CategorySidebar({ categories, activeId, onSelect }: Props) {
+  const { language } = useLanguage();
   return (
     <div className="w-[92px] flex-shrink-0 bg-white border-r border-gray-100 overflow-y-auto scrollbar-hide">
       <div className="py-3">
@@ -54,7 +57,7 @@ export default function CategorySidebar({ categories, activeId, onSelect }: Prop
                   }
                 `}
               >
-                {cat.name.zh || cat.name.en}
+                  {localizedText(cat.name, language)}
               </span>
             </div>
           );

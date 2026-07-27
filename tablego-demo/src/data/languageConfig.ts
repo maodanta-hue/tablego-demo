@@ -11,4 +11,4 @@ export const languageConfigs: LanguageConfig[] = [
 ];
 
 // 默认语言
-export const defaultLanguage: Language = 'en';
+export const defaultLanguage: Language = 'vi';

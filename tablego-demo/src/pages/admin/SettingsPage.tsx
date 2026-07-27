@@ -8,14 +8,9 @@ import { getCategories, saveCategoriesList } from '../../store/categoryStore';
 import { generateId } from '../../store/menuStore';
 import { getMenuItems } from '../../store/menuStore';
 import type { RestaurantInfo } from '../../store/restaurantStore';
-import type { MenuCategory, MultiLangText } from '../../types';
+import type { MenuCategory } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
-import type { Language } from '../../types';
-
-function getLocalName(name: MultiLangText, lang: Language): string {
-  const map: Record<string, string> = { zh: name.zh, en: name.en, vi: name.vi, ko: (name as any).ko ?? name.en, ja: (name as any).ja ?? name.en };
-  return map[lang] || name.en;
-}
+import { localizedText } from '../../utils/i18n';
 
 export default function SettingsPage() {
   const { language } = useLanguage();
@@ -225,7 +220,7 @@ export default function SettingsPage() {
                     <span className="text-xl">{cat.icon}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-800">
-                        {getLocalName(cat.name, language)}
+                        {localizedText(cat.name, language)}
                       </p>
                       <p className="text-[11px] text-gray-400">{cat.id}</p>
                     </div>
@@ -270,7 +265,6 @@ export default function SettingsPage() {
       {showCatForm && (
         <CategoryFormModal
           cat={editingCat}
-          language={language}
           onSave={handleCatSave}
           onClose={() => { setShowCatForm(false); setEditingCat(null); }}
         />
@@ -286,7 +280,6 @@ function CategoryFormModal({
   onClose,
 }: {
   cat: MenuCategory | null;
-  language: Language;
   onSave: (cat: MenuCategory) => void;
   onClose: () => void;
 }) {

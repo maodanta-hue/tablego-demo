@@ -33,6 +33,14 @@
   --color-error: #E53935;
   --color-error-light: #FFEBEE;
 
+  /* ---- Brand Colors (柠香小筑) ---- */
+  --color-brand-main: #2E7D32;
+  --color-brand-light: #4CAF50;
+  --color-brand-dark: #1B5E20;
+  --color-accent-main: #E53935;
+  --color-accent-light: #EF5350;
+  --color-accent-dark: #C62828;
+
   /* ---- Order Status Colors ---- */
   --color-status-pending: #FF9800;
   --color-status-pending-bg: #FFF3E0;

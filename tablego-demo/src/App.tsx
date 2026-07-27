@@ -41,9 +41,11 @@ export default function App() {
 
             {/* 通用页面（使用 AppLayout 含底部导航） */}
             <Route element={<AppLayout />}>
-              <Route path="/" element={<WelcomePage />} />
               <Route path="/owner" element={<OwnerPage />} />
             </Route>
+
+            {/* WelcomePage 独立布局（无底部导航） */}
+            <Route path="/" element={<WelcomePage />} />
 
             {/* 管理员登录页（独立布局，无底部导航） */}
             <Route path="/admin/login" element={<AdminLoginPage />} />

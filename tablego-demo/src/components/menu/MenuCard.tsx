@@ -4,7 +4,8 @@
  * - 点击"加入"按钮触发 onAdd
  */
 import { useLanguage } from '../../context/LanguageContext';
-import type { MenuItem, MultiLangText } from '../../types';
+import { localizedText } from '../../utils/i18n';
+import type { MenuItem } from '../../types';
 
 interface Props {
   item: MenuItem;
@@ -13,20 +14,6 @@ interface Props {
 
 export default function MenuCard({ item, onAdd }: Props) {
   const { t, language } = useLanguage();
-
-  /** 从 MultiLangText 中获取当前语言的文本 */
-  const localizedText = (text: MultiLangText | undefined): string => {
-    if (!text) return '';
-    // 优先当前语言，逐级 fallback
-    switch (language) {
-      case 'vi': return text.vi || text.en || text.zh;
-      case 'zh': return text.zh || text.en || text.vi;
-      case 'en': return text.en || text.vi || text.zh;
-      case 'ko': return text.en || text.vi || text.zh; // 韩文 fallback 到英文
-      case 'ja': return text.en || text.vi || text.zh; // 日文 fallback 到英文
-      default:   return text.en || text.vi || text.zh;
-    }
-  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-row items-stretch gap-0 active:scale-[0.99] transition-transform duration-150">
@@ -52,13 +39,13 @@ export default function MenuCard({ item, onAdd }: Props) {
       <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
         {/* 名称 */}
         <h3 className="text-sm font-semibold text-gray-800 leading-tight truncate">
-          {localizedText(item.name)}
+          {localizedText(item.name, language)}
         </h3>
 
         {/* 描述 */}
         {item.description && (
           <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">
-            {localizedText(item.description)}
+            {localizedText(item.description, language)}
           </p>
         )}
 

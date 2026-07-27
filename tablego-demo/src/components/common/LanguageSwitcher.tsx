@@ -27,19 +27,19 @@ export default function LanguageSwitcher({ minimal }: { minimal?: boolean }) {
       <div ref={ref} className="relative">
         <button
           onClick={() => setOpen(!open)}
-          className="w-[36px] h-[36px] rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-white text-xs font-medium border border-white/20 hover:bg-white/25 transition-all active:scale-95"
+          className="w-[36px] h-[36px] rounded-full bg-gray-100 flex items-center justify-center text-[#1A1A1A] text-base font-medium border border-gray-200 hover:bg-gray-200 transition-all active:scale-95"
         >
           {currentConfig.flag}
         </button>
          {open && createPortal(
            <div
              className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-gray-100 py-1 min-w-[120px] z-[9999] max-h-60 overflow-y-auto"
-             style={{ right: '16px' }}
            >
             {languageConfigs.map((cfg) => (
               <button
                 key={cfg.code}
                 onClick={() => {
+                  console.log('切换语言到:', cfg.code);
                   setLanguage(cfg.code);
                   setOpen(false);
                 }}

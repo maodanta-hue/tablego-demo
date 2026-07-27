@@ -206,8 +206,12 @@ export function initializeIfEmpty(): void {
   const db = loadDB();
   if (db.initialized) return;
 
-  // 检查是否有真实数据
-  const hasData = db.tables.length > 0 || db.menuItems.length > 0 || db.orders.length > 0;
+  // 安全访问，防止 undefined（旧版本数据可能缺少字段）
+  const tables = db.tables || [];
+  const menuItems = db.menuItems || [];
+  const orders = db.orders || [];
+
+  const hasData = tables.length > 0 || menuItems.length > 0 || orders.length > 0;
   if (hasData) {
     // 已有真实数据，仅标记初始化完成
     db.initialized = true;
@@ -217,7 +221,7 @@ export function initializeIfEmpty(): void {
 
   // 数据库为空，填充演示数据
   seedDemo();
-  console.log('📦 TableGo: Demo data initialized (A01-A10, 8 menu items)');
+  console.log('📦 TableGo: Demo data initialized');
 }
 
 /** 导出数据库为 JSON 字符串 */
