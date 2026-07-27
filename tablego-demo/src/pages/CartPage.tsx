@@ -20,11 +20,17 @@ export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, cartTotal, cartCount, submitOrder, currentTable } = useOrder();
   const [remark, setRemark] = useState('');
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const handleSubmit = () => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
     const orderId = submitOrder();
     if (orderId) {
       navigate(`/order-success?orderId=${orderId}&table=${encodeURIComponent(currentTable)}`);
     }
+    setTimeout(() => setIsSubmitting(false), 1000);
   };
 
   return (
@@ -98,7 +104,8 @@ export default function CartPage() {
                       </span>
                       <button
                         onClick={() => updateQuantity(ci.id, ci.quantity + 1)}
-                        className="w-7 h-7 rounded-full bg-[#E53935] flex items-center justify-center text-white hover:bg-[#C62828] transition text-[16px] leading-none"
+                        className="w-7 h-7 rounded-full bg-[#E53935] flex items-center justify-center text-white hover:bg-[#C62828] transition text-[16px] leading-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={ci.quantity >= 99}
                       >
                         +
                       </button>
@@ -143,9 +150,10 @@ export default function CartPage() {
             </div>
             <button
               onClick={handleSubmit}
-              className="h-[52px] px-8 rounded-[14px] bg-[#E53935] text-white text-[15px] font-semibold hover:bg-[#C62828] active:scale-95 shadow-md shadow-red-200 transition-all"
+              disabled={isSubmitting}
+              className="h-[52px] px-8 rounded-[14px] bg-[#E53935] text-white text-[15px] font-semibold hover:bg-[#C62828] active:scale-95 shadow-md shadow-red-200 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {t('submitOrder') || 'Submit Order'}
+              {isSubmitting ? '...' : (t('submitOrder') || 'Submit Order')}
             </button>
           </div>
         </div>
