@@ -109,20 +109,12 @@ export default function WelcomePage() {
         </div>
       </div>
 
-      {/* 下部：语言切换 + 老板入口（旧版风格） */}
+      {/* 下部：语言切换 */}
       <div className="flex flex-col items-center w-full max-w-sm">
         <div className="w-full mb-4">
           <p className="text-xs text-gray-400 text-center mb-3">🌐 Language</p>
           <LanguageSwitcher />
         </div>
-
-        {/* 老板端入口 */}
-        <button
-          onClick={() => navigate('/owner')}
-          className="text-xs text-gray-300 hover:text-gray-500 transition-colors"
-        >
-          👑 {t('owner.title')}
-        </button>
       </div>
     </div>
   );

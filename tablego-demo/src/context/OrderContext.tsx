@@ -210,17 +210,23 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
   const updateQuantity = useCallback((cartItemId: string, quantity: number) => {
     setCart((prev) => {
-      let next: CartItem[];
       if (quantity <= 0) {
-        next = prev.filter((ci) => ci.id !== cartItemId);
-      } else {
-        next = prev.map((ci) => (ci.id === cartItemId ? { ...ci, quantity } : ci));
+        const newCart = prev.filter((ci) => ci.id !== cartItemId);
+        saveCart(currentTable, newCart);
+        const allCarts = getSlice<CartsMap>(SLICE_KEY, {});
+        allCarts[currentTable] = newCart;
+        broadcast<CartsMap>(SLICE_KEY, allCarts);
+        return newCart;
       }
-      saveCart(currentTable, next);
+      const newCart = prev.map((ci) =>
+        ci.id === cartItemId ? { ...ci, quantity } : ci
+      );
+      const finalCart = newCart.slice();
+      saveCart(currentTable, finalCart);
       const allCarts = getSlice<CartsMap>(SLICE_KEY, {});
-      allCarts[currentTable] = next;
+      allCarts[currentTable] = finalCart;
       broadcast<CartsMap>(SLICE_KEY, allCarts);
-      return next;
+      return finalCart;
     });
   }, [currentTable]);
 
@@ -232,8 +238,14 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     broadcast<CartsMap>(SLICE_KEY, allCarts);
   }, [currentTable]);
 
-  const cartTotal = useMemo(() => cart.reduce((sum, ci) => sum + ci.price * ci.quantity, 0), [cart]);
-  const cartCount = useMemo(() => cart.reduce((sum, ci) => sum + ci.quantity, 0), [cart]);
+  const cartTotal = useMemo(() => {
+    console.log('🔄 重新计算 cartTotal', cart);
+    return cart.reduce((sum, ci) => sum + ci.price * ci.quantity, 0);
+  }, [cart]);
+  const cartCount = useMemo(() => {
+    console.log('🔄 重新计算 cartCount', cart);
+    return cart.reduce((sum, ci) => sum + ci.quantity, 0);
+  }, [cart]);
 
   // ---- 订单操作 ----
 

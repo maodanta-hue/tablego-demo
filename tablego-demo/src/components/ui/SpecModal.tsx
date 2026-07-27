@@ -85,7 +85,7 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
   const [totalPrice, setTotalPrice] = useState(item.price);
 
   useEffect(() => {
-    console.log('价格计算触发，selectedOptions:', selectedOptions);
+    console.log('🔥 价格计算触发', selectedOptions, '数量:', quantity);
     let price = item.price;
     Object.entries(selectedOptions).forEach(([groupId, selections]) => {
       const group = specGroups.find(g => g.id === groupId);
@@ -100,7 +100,7 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
         if (opt) price += opt.extraPrice;
       }
     });
-    console.log('计算后总价:', price * quantity);
+    console.log('🔥 计算后总价:', price * quantity);
     setTotalPrice(price * quantity);
   }, [selectedOptions, quantity, item.price]);
 
