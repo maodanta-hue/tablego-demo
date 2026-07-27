@@ -14,7 +14,9 @@ import CategorySidebar from '../components/customer/CategorySidebar';
 import ProductCard from '../components/customer/ProductCard';
 import BottomCart from '../components/customer/BottomCart';
 import OrderCard from '../components/customer/OrderCard';
+import SpecModal from '../components/ui/SpecModal';
 import type { MenuItem } from '../types/menu';
+import type { CartTopping } from '../types/cart';
 
 export default function MenuPage() {
   const { t } = useLanguage();
@@ -30,6 +32,10 @@ export default function MenuPage() {
 
   // Search
   const [searchQuery, setSearchQuery] = useState('');
+
+  // 规格弹窗状态
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [isSpecModalOpen, setIsSpecModalOpen] = useState(false);
 
   const productListRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +54,18 @@ export default function MenuPage() {
 
   // Add to cart with animation
   const handleAddToCart = useCallback((item: MenuItem) => {
-    addToCart(item);
+    // 打开规格选择弹窗
+    setSelectedItem(item);
+    setIsSpecModalOpen(true);
+  }, []);
+
+  // 实际添加到购物车的处理
+  const handleAddToCartWithSpec = useCallback((item: MenuItem, quantity: number, options: {
+    temperature?: string;
+    sugar?: string;
+    toppings?: CartTopping[];
+  }) => {
+    addToCart(item, quantity, options);
   }, [addToCart]);
 
   return (
@@ -179,6 +196,16 @@ export default function MenuPage() {
       {/* ⑤ Bottom Cart - only on menu tab */}
       {activeTab === 'menu' && cartCount > 0 && (
         <BottomCart onReviewOrder={() => navigate('/cart')} />
+      )}
+      
+      {/* 规格选择弹窗 */}
+      {selectedItem && (
+        <SpecModal
+          item={selectedItem}
+          open={isSpecModalOpen}
+          onClose={() => setIsSpecModalOpen(false)}
+          onAddToCart={handleAddToCartWithSpec}
+        />
       )}
     </div>
   );

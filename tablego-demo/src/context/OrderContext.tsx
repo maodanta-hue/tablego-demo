@@ -2,11 +2,11 @@
  * 订单上下文（OrderContext）
  * 管理：购物车 + 订单列表 + 当前桌号
  *
- * 简化版（Demo）：
  * - 购物车存 tablego_db.carts（按桌号隔离）
  * - 订单通过 store 模块持久化（顾客老板共享）
  * - 桌号从 URL ?table= 读取
- * - 无糖度/冰度等复杂选项（Demo 简化）
+ * - 支持规格匹配：温度/糖度/加料
+ * - 同规格合并数量，不同规格生成新项
  * - 支持 BroadcastChannel + StorageEvent 同步
  */
 import {
@@ -18,7 +18,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import type { CartItem, Order, OrderItem, MenuItem } from '../types';
+import type { CartItem, CartTopping, Order, OrderItem, MenuItem } from '../types';
 import {
   addOrder,
   updateOrderStatus,
@@ -32,10 +32,16 @@ import { broadcast, subscribe } from '../services/sync';
 // Context Value 类型
 // ============================================================
 
+export interface AddToCartOptions {
+  temperature?: string;
+  sugar?: string;
+  toppings?: CartTopping[];
+}
+
 interface OrderContextValue {
   currentTable: string;
   cart: CartItem[];
-  addToCart: (item: MenuItem, quantity?: number) => void;
+  addToCart: (item: MenuItem, quantity?: number, options?: AddToCartOptions) => void;
   removeFromCart: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;
@@ -65,65 +71,115 @@ function saveCart(table: string, cart: CartItem[]): void {
   setSlice(SLICE_KEY, carts);
 }
 
+/**
+ * 判断两个购物车项是否规格相同（温度、糖度、加料）
+ */
+function specsMatch(a: CartItem, b: CartItem): boolean {
+  if (a.menuItemId !== b.menuItemId) return false;
+  if ((a.temperature ?? 'none') !== (b.temperature ?? 'none')) return false;
+  if ((a.sugar ?? 'none') !== (b.sugar ?? 'none')) return false;
+
+  // 加料比较：长度 + 每个加料的 id 和数量
+  const aTops = a.toppings ?? [];
+  const bTops = b.toppings ?? [];
+  if (aTops.length !== bTops.length) return false;
+  for (let i = 0; i < aTops.length; i++) {
+    if (aTops[i].id !== bTops[i].id || aTops[i].quantity !== bTops[i].quantity) return false;
+  }
+  return true;
+}
+
+/**
+ * 计算加料总价
+ */
+function toppingsPrice(toppings?: CartTopping[]): number {
+  if (!toppings || toppings.length === 0) return 0;
+  return toppings.reduce((sum, t) => sum + t.price * t.quantity, 0);
+}
+
 // ============================================================
 // Provider
 // ============================================================
 
 export function OrderProvider({ children }: { children: ReactNode }) {
-  // 桌号从 URL query 参数读取
+  // 桌号从 URL query 参数读取，仅在首次初始化时使用默认值
   const [searchParams] = useSearchParams();
-  const currentTable = searchParams.get('table') || 'A1';
+  const [currentTable, _setCurrentTable] = useState<string>(() => {
+    const tableParam = searchParams.get('table');
+    return tableParam || 'A1';
+  });
 
   // 购物车状态
   const [cart, setCart] = useState<CartItem[]>(() => loadCart(currentTable));
 
-  // 桌号变化时重新加载购物车
-  useEffect(() => {
-    setCart(loadCart(currentTable));
-  }, [currentTable]);
+   // 桌号变化时重新加载购物车
+   useEffect(() => {
+     setCart(loadCart(currentTable));
+   }, [currentTable]);
 
-  // 购物车变化时自动保存
-  useEffect(() => {
-    saveCart(currentTable, cart);
-  }, [cart, currentTable]);
+    // 购物车变化时自动保存（避免 StrictMode 双次执行导致的重复保存）
+    useEffect(() => {
+      let timeoutId: ReturnType<typeof setTimeout> | null = null;
+      timeoutId = setTimeout(() => {
+        saveCart(currentTable, cart);
+      }, 20);
+      return () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      };
+    }, [cart, currentTable]);
 
-  // 监听 carts 同步（其他标签页/窗口修改购物车）
-  useEffect(() => {
-    const unsub = subscribe<CartsMap>(SLICE_KEY, (updatedCarts) => {
-      const updatedCart = updatedCarts[currentTable] ?? [];
-      setCart(updatedCart);
-    });
-    return unsub;
-  }, [currentTable]);
+   // 监听 carts 同步（其他标签页/窗口修改购物车）
+   useEffect(() => {
+     const unsub = subscribe<CartsMap>(SLICE_KEY, (updatedCarts) => {
+       const updatedCart = updatedCarts[currentTable] ?? [];
+       setCart(updatedCart);
+     });
+     return unsub;
+   }, [currentTable]);
 
   // ---- 购物车操作 ----
 
-  const addToCart = useCallback((item: MenuItem, quantity = 1) => {
+  const addToCart = useCallback((item: MenuItem, quantity = 1, options?: AddToCartOptions) => {
     setCart((prev) => {
-      const existing = prev.find((ci) => ci.menuItemId === item.id);
+      // 构建新项（用于匹配）
+      const newItemPartial: Partial<CartItem> = {
+        menuItemId: item.id,
+        temperature: options?.temperature,
+        sugar: options?.sugar,
+        toppings: options?.toppings,
+      };
+
+      // 查找相同规格的已有项（使用 menuItemId + 温度 + 糖度 + 加料 完全匹配）
+      const existing = prev.find((ci) => specsMatch(ci as CartItem, newItemPartial as CartItem));
+
       let next: CartItem[];
       if (existing) {
+        // 合并数量
         next = prev.map((ci) =>
           ci.id === existing.id
             ? { ...ci, quantity: ci.quantity + quantity }
             : ci,
         );
       } else {
+        // 创建新购物车项
+        const basePrice = item.price;
+        const topPrice = toppingsPrice(options?.toppings);
         const newItem: CartItem = {
           id: generateId(),
           menuItemId: item.id,
           name: { ...item.name },
-          price: item.price,
+          price: basePrice + topPrice,
           quantity,
           image: item.image,
+          temperature: options?.temperature,
+          sugar: options?.sugar,
+          toppings: options?.toppings?.map(t => ({ ...t })),
         };
         next = [...prev, newItem];
       }
-      // 保存后广播
-      saveCart(currentTable, next);
-      const allCarts = getSlice<CartsMap>(SLICE_KEY, {});
-      allCarts[currentTable] = next;
-      broadcast<CartsMap>(SLICE_KEY, allCarts);
+      // 只返回新的购物车状态，保存和广播通过useEffect处理
       return next;
     });
   }, [currentTable]);

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { getOrders, addOrder, generateOrderId, updateOrderStatus } from '../../store';
 import { getMenuItems } from '../../store/menuStore';
+import { seedDemo } from '../../services/storage';
 import { subscribe } from '../../services/sync';
 import type { OrderItem, Order } from '../../types';
 import { formatPrice } from '../../hooks/useFormat';
@@ -35,7 +36,12 @@ export default function OrdersPage() {
   /** 生成演示数据 */
   const generateDemoData = useCallback(() => {
     setLoading(true);
-    const menuItems = getMenuItems().filter((m) => m.available);
+    let menuItems = getMenuItems().filter((m) => m.available);
+    if (menuItems.length === 0) {
+      // 如果没有菜品数据，先写入种子数据
+      seedDemo();
+      menuItems = getMenuItems().filter((m) => m.available);
+    }
     if (menuItems.length === 0) {
       setLoading(false);
       return;

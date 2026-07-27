@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { getRestaurantInfo, saveRestaurantInfo } from '../../store/restaurantStore';
 import { getCategories, saveCategoriesList } from '../../store/categoryStore';
 import { generateId } from '../../store/menuStore';
+import { getMenuItems } from '../../store/menuStore';
 import type { RestaurantInfo } from '../../store/restaurantStore';
 import type { MenuCategory, MultiLangText } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
@@ -42,6 +43,13 @@ export default function SettingsPage() {
   };
 
   const handleCatDelete = (id: string) => {
+    // 检查分类下是否有商品
+    const items = getMenuItems();
+    const hasProducts = items.some((item) => item.categoryId === id);
+    if (hasProducts) {
+      alert('Please remove products from this category first.');
+      return;
+    }
     const all = categories.filter((c) => c.id !== id);
     saveCategoriesList(all);
     setCategories(all);

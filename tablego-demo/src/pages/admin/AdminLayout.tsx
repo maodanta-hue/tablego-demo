@@ -17,7 +17,7 @@ export default function AdminLayout() {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
       isActive
-        ? 'bg-green-50 text-green-700 font-semibold'
+        ? 'bg-[#FFEBEE] text-[#E53935] font-semibold'
         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
     }`;
 
@@ -27,7 +27,7 @@ export default function AdminLayout() {
       <aside className="hidden md:flex md:flex-col w-64 bg-white border-r border-gray-200 p-4">
         {/* 商店名称 */}
         <div className="flex items-center gap-3 px-4 py-5 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center text-white text-lg font-bold">
+          <div className="w-10 h-10 rounded-xl bg-[#E53935] flex items-center justify-center text-white text-lg font-bold">
             T
           </div>
           <div>
@@ -73,7 +73,7 @@ export default function AdminLayout() {
       {/* 移动端顶部导航 */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center text-white text-sm font-bold">
+          <div className="w-8 h-8 rounded-lg bg-[#E53935] flex items-center justify-center text-white text-sm font-bold">
             T
           </div>
           <span className="font-bold text-gray-800">TableGo</span>
@@ -91,7 +91,7 @@ export default function AdminLayout() {
             end
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 text-xs ${
-                isActive ? 'text-green-600' : 'text-gray-500'
+                isActive ? 'text-[#E53935]' : 'text-gray-500'
               }`
             }
           >
@@ -102,7 +102,7 @@ export default function AdminLayout() {
             to="/admin/dashboard/orders"
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 text-xs ${
-                isActive ? 'text-green-600' : 'text-gray-500'
+                isActive ? 'text-[#E53935]' : 'text-gray-500'
               }`
             }
           >
@@ -113,7 +113,7 @@ export default function AdminLayout() {
             to="/admin/dashboard/menu"
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 text-xs ${
-                isActive ? 'text-green-600' : 'text-gray-500'
+                isActive ? 'text-[#E53935]' : 'text-gray-500'
               }`
             }
           >
@@ -124,7 +124,7 @@ export default function AdminLayout() {
             to="/admin/dashboard/tables"
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 text-xs ${
-                isActive ? 'text-green-600' : 'text-gray-500'
+                isActive ? 'text-[#E53935]' : 'text-gray-500'
               }`
             }
           >
@@ -135,7 +135,7 @@ export default function AdminLayout() {
             to="/admin/dashboard/settings"
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 text-xs ${
-                isActive ? 'text-green-600' : 'text-gray-500'
+                isActive ? 'text-[#E53935]' : 'text-gray-500'
               }`
             }
           >

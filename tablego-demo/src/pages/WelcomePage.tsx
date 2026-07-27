@@ -1,20 +1,61 @@
 /**
  * 欢迎页（首页）
  * - 餐厅 Logo、名称、欢迎语
- * - 模拟扫码选择桌号 → 进入菜单
+ * - 从 tablego_db 动态读取桌号列表
+ * - 支持 URL 参数 ?table=:tableNo 直接进入
  * - 语言切换
  * - 老板端入口
  */
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import LanguageSwitcher from '../components/common/LanguageSwitcher';
+import { getSlice } from '../services/storage';
+import type { TableInfo } from '../data/tables';
 
-/** 演示桌号列表 */
-const DEMO_TABLES = ['A01', 'A02', 'A03', 'B01'];
+const TABLES_KEY = 'tables';
 
 export default function WelcomePage() {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [tables, setTables] = useState<TableInfo[]>(() => getSlice<TableInfo[]>(TABLES_KEY, []));
+
+  // 实时同步后台桌号变化
+  useEffect(() => {
+    const refresh = () => setTables(getSlice<TableInfo[]>(TABLES_KEY, []));
+    refresh();
+    // 每次页面激活时重新读取
+    const interval = setInterval(refresh, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // 支持 URL 参数直接进入: ?table=A08
+  useEffect(() => {
+    const tableParam = searchParams.get('table');
+    if (!tableParam) return;
+
+    const upperNo = tableParam.toUpperCase();
+    const table = tables.find((t) => t.number === upperNo);
+
+    if (!table) {
+      // 无效桌号，忽略参数
+      return;
+    }
+
+    if (table.status !== 'active') {
+      // 已停用，忽略参数
+      return;
+    }
+
+    // 有效桌号，自动进入菜单
+    navigate(`/menu?table=${encodeURIComponent(upperNo)}`, { replace: true });
+  }, [searchParams, tables, navigate]);
+
+  const activeTables = tables.filter((t) => t.status === 'active');
+  const disabledTables = tables.filter((t) => t.status === 'disabled');
+  const totalActive = activeTables.length;
+  const totalDisabled = disabledTables.length;
 
   const handleEnterMenu = (tableNo: string) => {
     navigate(`/menu?table=${encodeURIComponent(tableNo)}`);
@@ -53,25 +94,47 @@ export default function WelcomePage() {
 
         {/* 桌号选择 */}
         <div className="w-full max-w-sm mb-6">
-          <p className="text-xs text-gray-400 text-center mb-3">
-            📲 {t('welcome.enter')} — {t('welcome.start')}
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            {DEMO_TABLES.map((tableNo) => (
-              <button
-                key={tableNo}
-                onClick={() => handleEnterMenu(tableNo)}
-                className="w-full py-4 px-6 rounded-2xl bg-white border-2 border-green-200
-                           text-green-700 font-bold text-base
-                           shadow-sm hover:shadow-md hover:border-green-400 hover:bg-green-50
-                           active:scale-[0.97] transition-all duration-200
-                           flex items-center justify-center gap-2"
-              >
-                <span>🍽️</span>
-                {t('welcome.table')} {tableNo}
-              </button>
-            ))}
-          </div>
+          {tables.length === 0 ? (
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+              <div className="text-5xl mb-3">🪑</div>
+              <p className="text-gray-500 font-semibold mb-1">No tables available</p>
+              <p className="text-gray-400 text-[13px]">Please contact restaurant.</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-xs text-gray-400 text-center mb-3">
+                📲 {totalActive} Tables Available
+                {totalDisabled > 0 && ` · ${totalDisabled} Unavailable`}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {activeTables.map((table) => (
+                  <button
+                    key={table.id}
+                    onClick={() => handleEnterMenu(table.number)}
+                    className="w-full py-4 px-6 rounded-2xl bg-white border-2 border-green-200
+                               text-green-700 font-bold text-base
+                               shadow-sm hover:shadow-md hover:border-green-400 hover:bg-green-50
+                               active:scale-[0.97] transition-all duration-200
+                               flex items-center justify-center gap-2"
+                  >
+                    <span>🍽️</span>
+                    {t('welcome.table')} {table.number}
+                  </button>
+                ))}
+                {disabledTables.map((table) => (
+                  <div
+                    key={table.id}
+                    className="w-full py-4 px-6 rounded-2xl bg-gray-50 border-2 border-gray-200
+                               text-gray-300 text-base font-bold
+                               flex items-center justify-center gap-2 cursor-not-allowed"
+                  >
+                    <span>🚫</span>
+                    {t('welcome.table')} {table.number}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

@@ -33,13 +33,15 @@ export default function App() {
             {/* 扫码入口：/table/:tableNo → 自动跳转 /menu?table=:tableNo */}
             <Route path="/table/:tableNo" element={<TableEntryPage />} />
 
-            {/* 顾客端页面（使用 AppLayout 包含底部导航） */}
+            {/* 顾客端页面 — 独立布局（每个页面自带 Header/Footer） */}
+            <Route path="/menu" element={<MenuPage />} />
+            <Route path="/menu/:menuItemId" element={<MenuDetailPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/order-success" element={<OrderSuccessPage />} />
+
+            {/* 通用页面（使用 AppLayout 含底部导航） */}
             <Route element={<AppLayout />}>
               <Route path="/" element={<WelcomePage />} />
-              <Route path="/menu" element={<MenuPage />} />
-              <Route path="/menu/:menuItemId" element={<MenuDetailPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/order-success" element={<OrderSuccessPage />} />
               <Route path="/owner" element={<OwnerPage />} />
             </Route>
 

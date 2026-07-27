@@ -241,7 +241,50 @@ function MenuItemForm({
   const [descZh, setDescZh] = useState(item?.description.zh ?? '');
   const [price, setPrice] = useState(item?.price ?? 25000);
   const [image, setImage] = useState(item?.image ?? '');
+  const [imagePreview, setImagePreview] = useState<string | null>(item?.image ?? null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [imageUrlInput, setImageUrlInput] = useState(item?.image?.startsWith('http') ? item.image : '');
   const [categoryId, setCategoryId] = useState(item?.categoryId ?? (categories[0]?.id ?? 'coffee'));
+
+  /** 处理本地图片上传 -> base64 */
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setUploadError('只支持 JPG、PNG、WebP 格式');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setUploadError('Image size cannot exceed 2MB');
+      return;
+    }
+
+    setUploadError(null);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      setImage(dataUrl);
+      setImagePreview(dataUrl);
+      setImageUrlInput('');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  /** 处理 URL 输入 */
+  const handleUrlChange = (url: string) => {
+    setImageUrlInput(url);
+    if (url) {
+      setImage(url);
+      setImagePreview(url);
+    } else if (!imagePreview) {
+      setImage('');
+      setImagePreview(null);
+    }
+  };
   const [available, setAvailable] = useState(item?.available !== false);
   const [popular, setPopular] = useState(item?.popular ?? false);
 
@@ -304,10 +347,62 @@ function MenuItemForm({
                 className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-[#E53935]/20" />
             </div>
             <div>
-              <label className="block text-[11px] text-gray-500 mb-1">图片 URL</label>
-              <input value={image} onChange={(e) => setImage(e.target.value)}
-                placeholder="https://..."
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-[#E53935]/20" />
+              <label className="block text-[11px] text-gray-500 mb-1.5">菜品图片</label>
+              {/* 图片预览 + 上传区 */}
+              <div
+                onClick={() => document.getElementById('menu-image-input')?.click()}
+                className={`relative w-full h-28 rounded-xl border-2 border-dashed cursor-pointer overflow-hidden transition ${
+                  imagePreview
+                    ? 'border-transparent bg-gray-50'
+                    : 'border-gray-200 bg-gray-50 hover:border-[#E53935]/40 hover:bg-red-50/20'
+                }`}
+              >
+                {imagePreview ? (
+                  <>
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition flex items-center justify-center">
+                      <span className="text-white text-[12px] font-medium opacity-0 hover:opacity-100 transition">
+                        点击更换
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                    <svg className="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-[12px]">点击上传图片</span>
+                    <span className="text-[10px] text-gray-300 mt-0.5">JPG / PNG / WebP · 最大 2MB</span>
+                  </div>
+                )}
+                <input
+                  id="menu-image-input"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+              </div>
+
+              {/* 上传错误 */}
+              {uploadError && (
+                <p className="text-[11px] text-red-500 mt-1.5">{uploadError}</p>
+              )}
+
+              {/* 或输入 URL */}
+              <div className="mt-2">
+                <label className="block text-[10px] text-gray-400 mb-1">或输入图片链接</label>
+                <input
+                  value={imageUrlInput}
+                  onChange={(e) => handleUrlChange(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-[12px] text-gray-600 outline-none focus:ring-2 focus:ring-[#E53935]/20"
+                />
+              </div>
             </div>
           </div>
 
