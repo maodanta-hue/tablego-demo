@@ -102,11 +102,15 @@ function toppingsPrice(toppings?: CartTopping[]): number {
 // ============================================================
 
 export function OrderProvider({ children }: { children: ReactNode }) {
-  // 桌号从 URL query 参数读取，仅在首次初始化时使用默认值
+  // 桌号从 URL query 参数读取，不允许使用硬编码默认值
   const [searchParams] = useSearchParams();
   const [currentTable, _setCurrentTable] = useState<string>(() => {
     const tableParam = searchParams.get('table');
-    return tableParam || 'A1';
+    if (!tableParam) {
+      console.warn('Table number missing from URL, default to A1 for fallback');
+      return 'A1';
+    }
+    return tableParam;
   });
 
   // 购物车状态
