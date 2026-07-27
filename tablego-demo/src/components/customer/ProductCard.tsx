@@ -95,7 +95,7 @@ export default function ProductCard({ item, onAddToCart }: Props) {
             onClick={handleAdd}
             key={animKey}
             className={`
-              relative w-[72px] h-[32px] rounded-lg text-[13px] font-semibold transition-all duration-200 active:scale-95
+              relative w-[76px] h-[36px] rounded-lg text-[14px] font-semibold transition-all duration-200 active:scale-95
               ${qty > 0
                 ? 'bg-[#E53935] text-white shadow-sm shadow-red-200'
                 : 'bg-[#E53935] text-white hover:bg-[#d32f2f]'

@@ -97,7 +97,7 @@ export default function MenuPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('searchMenu') || 'Search menu...'}
-                className="w-full h-10 pl-9 pr-4 rounded-[12px] bg-[#F3F3F3] text-[14px] text-gray-800 placeholder-gray-400 border-none outline-none focus:ring-2 focus:ring-[#E53935]/20 transition-all"
+                className="w-full h-12 pl-9 pr-4 rounded-[12px] bg-[#F3F3F3] text-[15px] text-gray-800 placeholder-gray-400 border-none outline-none focus:ring-2 focus:ring-[#E53935]/20 transition-all"
               />
             </div>
           </div>
