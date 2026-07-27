@@ -102,7 +102,7 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
     });
     console.log('计算后总价:', price * quantity);
     setTotalPrice(price * quantity);
-  }, [selectedOptions, quantity, item.price, specGroups]);
+  }, [selectedOptions, quantity, item.price]);
 
   // 重置状态
   useEffect(() => {

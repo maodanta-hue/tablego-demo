@@ -15,9 +15,10 @@ import {
   useState,
   useCallback,
   useEffect,
+  useMemo,
   type ReactNode,
 } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import type { CartItem, CartTopping, Order, OrderItem, MenuItem } from '../types';
 import {
   addOrder,
@@ -103,15 +104,23 @@ function toppingsPrice(toppings?: CartTopping[]): number {
 
 export function OrderProvider({ children }: { children: ReactNode }) {
   // 桌号从 URL query 参数读取，不允许使用硬编码默认值
-  const [searchParams] = useSearchParams();
-  const [currentTable, _setCurrentTable] = useState<string>(() => {
-    const tableParam = searchParams.get('table');
-    if (!tableParam) {
-      console.warn('Table number missing from URL, default to A1 for fallback');
-      return 'A1';
-    }
-    return tableParam;
+  const location = useLocation();
+
+  const [currentTable, setCurrentTable] = useState<string>(() => {
+    const params = new URLSearchParams(location.search);
+    const tableParam = params.get('table');
+    return tableParam || '';
   });
+
+  // 监听 URL 中 table 参数变化（刷新、从 WelcomePage 跳转、手动改 URL）
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tableParam = params.get('table');
+    if (tableParam && tableParam !== currentTable) {
+      console.log('桌号从 URL 更新:', currentTable, '→', tableParam);
+      setCurrentTable(tableParam);
+    }
+  }, [location.search, currentTable]);
 
   // 购物车状态
   const [cart, setCart] = useState<CartItem[]>(() => loadCart(currentTable));
@@ -223,8 +232,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     broadcast<CartsMap>(SLICE_KEY, allCarts);
   }, [currentTable]);
 
-  const cartTotal = cart.reduce((sum, ci) => sum + ci.price * ci.quantity, 0);
-  const cartCount = cart.reduce((sum, ci) => sum + ci.quantity, 0);
+  const cartTotal = useMemo(() => cart.reduce((sum, ci) => sum + ci.price * ci.quantity, 0), [cart]);
+  const cartCount = useMemo(() => cart.reduce((sum, ci) => sum + ci.quantity, 0), [cart]);
 
   // ---- 订单操作 ----
 
