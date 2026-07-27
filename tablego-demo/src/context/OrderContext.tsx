@@ -15,7 +15,6 @@ import {
   useState,
   useCallback,
   useEffect,
-  useMemo,
   type ReactNode,
 } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -238,14 +237,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     broadcast<CartsMap>(SLICE_KEY, allCarts);
   }, [currentTable]);
 
-  const cartTotal = useMemo(() => {
-    console.log('🔄 重新计算 cartTotal', cart);
-    return cart.reduce((sum, ci) => sum + ci.price * ci.quantity, 0);
-  }, [cart]);
-  const cartCount = useMemo(() => {
-    console.log('🔄 重新计算 cartCount', cart);
-    return cart.reduce((sum, ci) => sum + ci.quantity, 0);
-  }, [cart]);
+  const cartTotal = cart.reduce((sum, ci) => sum + ci.price * ci.quantity, 0);
+  const cartCount = cart.reduce((sum, ci) => sum + ci.quantity, 0);
 
   // ---- 订单操作 ----
 

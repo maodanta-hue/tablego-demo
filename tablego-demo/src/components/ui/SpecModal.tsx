@@ -82,10 +82,8 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
   const specGroups = useMemo(() => getSpecGroups(), []);
   const isAddingRef = useRef(false);
 
-  const [totalPrice, setTotalPrice] = useState(item.price);
-
-  useEffect(() => {
-    console.log('🔥 价格计算触发', selectedOptions, '数量:', quantity);
+  // 同步计算总价（不使用 useEffect，确保生产环境稳定）
+  const totalPrice = (() => {
     let price = item.price;
     Object.entries(selectedOptions).forEach(([groupId, selections]) => {
       const group = specGroups.find(g => g.id === groupId);
@@ -100,9 +98,8 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
         if (opt) price += opt.extraPrice;
       }
     });
-    console.log('🔥 计算后总价:', price * quantity);
-    setTotalPrice(price * quantity);
-  }, [selectedOptions, quantity, item.price]);
+    return price * quantity;
+  })();
 
   // 重置状态
   useEffect(() => {
