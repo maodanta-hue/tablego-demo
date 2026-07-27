@@ -117,7 +117,7 @@ export default function OrdersPage() {
     } else if (currentStatus === 'preparing') {
       updateOrderStatus(orderId, 'completed');
     }
-    setOrders(getOrders());
+    // 订阅机制会自动更新订单列表，无需手动调用setOrders
   };
 
   const filteredOrders = statusFilter === 'all' ? orders : orders.filter((o) => o.status === statusFilter);
