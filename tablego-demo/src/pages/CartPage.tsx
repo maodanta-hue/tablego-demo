@@ -11,7 +11,8 @@ import { localizedText } from '../utils/i18n';
 export default function CartPage() {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const { cart, removeFromCart, updateQuantity, cartTotal, cartCount, submitOrder, currentTable } = useOrder();
+  const { cart, removeFromCart, updateQuantity, cartTotal, cartCount, submitOrder, currentTable, updateTrigger } = useOrder();
+  void updateTrigger; // 确保强制更新时重渲染总价
   const [remark, setRemark] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);

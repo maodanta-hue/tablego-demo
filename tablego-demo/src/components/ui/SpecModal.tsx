@@ -13,6 +13,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import type { MenuItem } from '../../types/menu';
 import type { CartTopping } from '../../types/cart';
 import { useLanguage } from '../../context/LanguageContext';
+import { useOrder } from '../../context/OrderContext';
 import { localizedText } from '../../utils/i18n';
 
 interface Props {
@@ -77,6 +78,7 @@ function getSpecGroups(): OptionGroup[] {
 
 export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
   const { t, language } = useLanguage();
+  const { updateTrigger } = useOrder();
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string | string[]>>({});
   const [quantity, setQuantity] = useState(1);
   const specGroups = useMemo(() => getSpecGroups(), []);
@@ -84,6 +86,7 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
 
   // 同步计算总价（不使用 useEffect，确保生产环境稳定）
   const totalPrice = (() => {
+    void updateTrigger; // 确保每次强制更新都重新计算
     let price = item.price;
     Object.entries(selectedOptions).forEach(([groupId, selections]) => {
       const group = specGroups.find(g => g.id === groupId);

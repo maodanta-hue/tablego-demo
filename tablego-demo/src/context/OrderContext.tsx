@@ -50,6 +50,8 @@ interface OrderContextValue {
   submitOrder: () => string | null;
   markOrderCompleted: (orderId: string) => void;
   refreshOrders: () => void;
+  updateTrigger: number;
+  forceUpdate: () => void;
 }
 
 const OrderContext = createContext<OrderContextValue | null>(null);
@@ -124,6 +126,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   // 购物车状态
   const [cart, setCart] = useState<CartItem[]>(() => loadCart(currentTable));
 
+  // 强制更新触发器（确保 Vercel 生产环境价格刷新）
+  const [updateTrigger, setUpdateTrigger] = useState(0);
+  const forceUpdate = useCallback(() => {
+    setUpdateTrigger(prev => prev + 1);
+  }, []);
+
    // 桌号变化时重新加载购物车
    useEffect(() => {
      setCart(loadCart(currentTable));
@@ -194,7 +202,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       // 只返回新的购物车状态，保存和广播通过useEffect处理
       return next;
     });
-  }, [currentTable]);
+    forceUpdate();
+  }, [currentTable, forceUpdate]);
 
   const removeFromCart = useCallback((cartItemId: string) => {
     setCart((prev) => {
@@ -205,7 +214,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       broadcast<CartsMap>(SLICE_KEY, allCarts);
       return next;
     });
-  }, [currentTable]);
+    forceUpdate();
+  }, [currentTable, forceUpdate]);
 
   const updateQuantity = useCallback((cartItemId: string, quantity: number) => {
     setCart((prev) => {
@@ -227,7 +237,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       broadcast<CartsMap>(SLICE_KEY, allCarts);
       return finalCart;
     });
-  }, [currentTable]);
+    forceUpdate();
+  }, [currentTable, forceUpdate]);
 
   const clearCart = useCallback(() => {
     setCart([]);
@@ -235,7 +246,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     const allCarts = getSlice<CartsMap>(SLICE_KEY, {});
     allCarts[currentTable] = [];
     broadcast<CartsMap>(SLICE_KEY, allCarts);
-  }, [currentTable]);
+    forceUpdate();
+  }, [currentTable, forceUpdate]);
 
   const cartTotal = cart.reduce((sum, ci) => sum + ci.price * ci.quantity, 0);
   const cartCount = cart.reduce((sum, ci) => sum + ci.quantity, 0);
@@ -296,6 +308,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         submitOrder,
         markOrderCompleted,
         refreshOrders,
+        updateTrigger,
+        forceUpdate,
       }}
     >
       {children}

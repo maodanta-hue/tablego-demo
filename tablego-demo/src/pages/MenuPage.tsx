@@ -28,7 +28,8 @@ import type { CartTopping } from '../types/cart';
 export default function MenuPage() {
   const { language } = useLanguage();
   const navigate = useNavigate();
-  const { addToCart, cartCount, currentTable } = useOrder();
+  const { addToCart, cartCount, currentTable, updateTrigger } = useOrder();
+  void updateTrigger; // 确保强制更新时底部购物车条价格刷新
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'menu' | 'orders'>('menu');
