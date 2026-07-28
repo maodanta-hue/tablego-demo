@@ -6,6 +6,7 @@
  * - 选中态：左侧主色竖条 + 主色浅背景
  * - 图标 24px，文字 Caption 12px
  */
+import { memo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { localizedText } from '../../utils/i18n';
 import type { MenuCategory } from '../../types';
@@ -16,7 +17,7 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-export default function CategorySidebar({ categories, activeId, onSelect }: Props) {
+const CategorySidebar = memo(function CategorySidebar({ categories, activeId, onSelect }: Props) {
   const { language } = useLanguage();
   return (
     <div className="w-[80px] flex-shrink-0 bg-white border-r border-[#EEEEF0] overflow-y-auto scrollbar-hide">
@@ -64,4 +65,6 @@ export default function CategorySidebar({ categories, activeId, onSelect }: Prop
       </div>
     </div>
   );
-}
+});
+
+export default CategorySidebar;

@@ -8,6 +8,7 @@
  * - 右侧：「选好了」按钮 强调色 圆角 M/12px
  * - 数量变化动画（角标弹入）
  */
+import { memo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useOrder } from '../../context/OrderContext';
 
@@ -15,7 +16,7 @@ interface Props {
   onReviewOrder: () => void;
 }
 
-export default function BottomCart({ onReviewOrder }: Props) {
+const BottomCart = memo(function BottomCart({ onReviewOrder }: Props) {
   const { t } = useLanguage();
   const { cartTotal, cartCount, updateTrigger } = useOrder();
   void updateTrigger; // 确保购物车变化时底部条重渲染
@@ -63,4 +64,6 @@ export default function BottomCart({ onReviewOrder }: Props) {
       </div>
     </div>
   );
-}
+});
+
+export default BottomCart;

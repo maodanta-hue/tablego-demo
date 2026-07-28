@@ -3,6 +3,7 @@
  * 显示：Order Number、Table、Status（颜色编码）、Time、Items
  * Status colors: Pending (orange), Preparing (blue), Completed (green)
  */
+import { memo } from 'react';
 import type { Order } from '../../types/order';
 import type { Language } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
@@ -45,7 +46,7 @@ function formatTime(iso: string): string {
   }
 }
 
-export default function OrderCard({ order }: OrderCardProps) {
+const OrderCard = memo(function OrderCard({ order }: OrderCardProps) {
   const { t, language } = useLanguage();
   const config = statusConfig[order.status] || statusConfig.pending;
 
@@ -90,4 +91,6 @@ export default function OrderCard({ order }: OrderCardProps) {
       </div>
     </div>
   );
-}
+});
+
+export default OrderCard;

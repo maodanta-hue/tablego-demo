@@ -7,8 +7,9 @@
  * - 月售 + 推荐理由：12px 文字灰
  * - 价格：20px Bold 强调色 #D84315
  * - "选规格" 按钮：主色填充，圆角 M/12px
+ * - 图片 LQIP（低质量占位 → 加载后淡入）
  */
-import { useMemo } from 'react';
+import { useMemo, useState, memo } from 'react';
 import type { MenuItem } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { localizedText } from '../../utils/i18n';
@@ -64,7 +65,7 @@ function getCategoryLabel(
   return key ? t(key) : categoryId;
 }
 
-export default function ProductCard({ item, onAddToCart }: Props) {
+const ProductCard = memo(function ProductCard({ item, onAddToCart }: Props) {
   const { t, language } = useLanguage();
   const salesData = useMemo(() => getSalesData(item.id), [item.id]);
 
@@ -89,17 +90,9 @@ export default function ProductCard({ item, onAddToCart }: Props) {
   return (
     <div className="flex gap-4 py-4 px-4 border-b border-[#EEEEF0] last:border-b-0 bg-white hover:bg-[#F8F9FA]/50 transition-colors">
       {/* 左图 80×80 — 圆角 L/16px */}
-      <div className="w-[80px] h-[80px] rounded-[16px] overflow-hidden bg-[#F0F0F0] flex-shrink-0 flex items-center justify-center">
+      <div className="w-[80px] h-[80px] rounded-[16px] overflow-hidden bg-[#F0F0F0] flex-shrink-0 flex items-center justify-center relative">
         {item.image ? (
-          <img
-            src={item.image}
-            alt={localizedText(item.name, language)}
-            className="w-full h-full object-cover"
-            loading="lazy"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
+          <ProductImage src={item.image} alt={localizedText(item.name, language)} />
         ) : (
           <span className="text-3xl">{categoryEmoji(item.categoryId)}</span>
         )}
@@ -145,4 +138,28 @@ export default function ProductCard({ item, onAddToCart }: Props) {
       </div>
     </div>
   );
+});
+
+/** 图片组件：LQIP 占位 → 加载完成后淡入 */
+function ProductImage({ src, alt }: { src: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <>
+      {!loaded && <div className="absolute inset-0 bg-[#EEEEF0] animate-pulse" />}
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        onError={(e) => {
+          (e.target as HTMLImageElement).style.display = 'none';
+        }}
+        className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+      />
+    </>
+  );
 }
+
+export default ProductCard;
