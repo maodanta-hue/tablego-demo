@@ -9,7 +9,7 @@
  * - 规格弹窗：Bottom Sheet 样式
  */
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useOrder } from '../context/OrderContext';
 import { getCategories } from '../store/categoryStore';
@@ -28,8 +28,19 @@ import type { CartTopping } from '../types/cart';
 export default function MenuPage() {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToCart, cartCount, currentTable, updateTrigger } = useOrder();
   void updateTrigger; // 确保强制更新时底部购物车条价格刷新
+
+  // 页面激活时重新同步 URL 桌号参数（Vercel 生产环境兜底）
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tableParam = params.get('table');
+    if (tableParam && tableParam !== currentTable) {
+      console.log('MenuPage 检测到桌号不一致:', currentTable, '→', tableParam);
+      // currentTable 由 OrderContext 的 useEffect 同步更新，此处仅做检测
+    }
+  }, [location.search, currentTable]);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'menu' | 'orders'>('menu');

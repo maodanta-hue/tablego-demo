@@ -18,7 +18,8 @@ interface Props {
 
 export default function BottomCart({ onReviewOrder }: Props) {
   const { t } = useLanguage();
-  const { cartTotal, cartCount } = useOrder();
+  const { cartTotal, cartCount, updateTrigger } = useOrder();
+  void updateTrigger; // 确保购物车变化时底部条重渲染
 
   if (cartCount === 0) return null;
 

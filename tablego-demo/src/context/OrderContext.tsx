@@ -110,7 +110,13 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const [currentTable, setCurrentTable] = useState<string>(() => {
     const params = new URLSearchParams(location.search);
     const tableParam = params.get('table');
-    return tableParam || '';
+    if (tableParam) {
+      localStorage.setItem('lastTable', tableParam);
+      return tableParam;
+    }
+    // URL 无 table 参数时，从 localStorage 读取上次使用的桌号
+    const saved = localStorage.getItem('lastTable');
+    return saved || '';
   });
 
   // 监听 URL 中 table 参数变化（刷新、从 WelcomePage 跳转、手动改 URL）
@@ -120,6 +126,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     if (tableParam && tableParam !== currentTable) {
       console.log('桌号从 URL 更新:', currentTable, '→', tableParam);
       setCurrentTable(tableParam);
+      setCart(loadCart(tableParam));
+      localStorage.setItem('lastTable', tableParam);
     }
   }, [location.search, currentTable]);
 
