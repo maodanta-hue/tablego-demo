@@ -73,11 +73,28 @@ export default function OrderCard({ order }: Props) {
                 {t('app.currency')}{(item.price * item.quantity).toLocaleString()}
               </span>
             </div>
-            {item.remark && (
+            {(item.temperature || item.sugar || (item.toppings && item.toppings.length > 0) || item.remark) && (
               <div className="flex flex-wrap gap-1 mt-1">
-                <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">
-                  📝 {item.remark}
-                </span>
+                {item.temperature && (
+                  <span className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">
+                    🧊 {item.temperature}
+                  </span>
+                )}
+                {item.sugar && (
+                  <span className="text-[10px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded-full">
+                    🍬 {item.sugar}
+                  </span>
+                )}
+                {item.toppings && item.toppings.length > 0 && (
+                  <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded-full">
+                    ➕ {item.toppings.map(t => t.name).join(', ')}
+                  </span>
+                )}
+                {item.remark && (
+                  <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">
+                    📝 {item.remark}
+                  </span>
+                )}
               </div>
             )}
           </div>

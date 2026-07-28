@@ -36,6 +36,7 @@ export interface AddToCartOptions {
   temperature?: string;
   sugar?: string;
   toppings?: CartTopping[];
+  remark?: string;
 }
 
 interface OrderContextValue {
@@ -47,7 +48,7 @@ interface OrderContextValue {
   clearCart: () => void;
   cartTotal: number;
   cartCount: number;
-  submitOrder: () => string | null;
+  submitOrder: (customerNote?: string) => string | null;
   markOrderCompleted: (orderId: string) => void;
   refreshOrders: () => void;
   updateTrigger: number;
@@ -204,6 +205,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           temperature: options?.temperature,
           sugar: options?.sugar,
           toppings: options?.toppings?.map(t => ({ ...t })),
+          remark: options?.remark,
         };
         next = [...prev, newItem];
       }
@@ -262,7 +264,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
   // ---- 订单操作 ----
 
-  const submitOrder = useCallback((): string | null => {
+  const submitOrder = useCallback((customerNote?: string): string | null => {
     if (cart.length === 0) return null;
 
     const orderItems: OrderItem[] = cart.map((ci) => ({
@@ -270,6 +272,10 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       name: { ...ci.name },
       price: ci.price,
       quantity: ci.quantity,
+      temperature: ci.temperature,
+      sugar: ci.sugar,
+      toppings: ci.toppings?.map(t => ({ ...t })),
+      remark: ci.remark || customerNote,
     }));
 
     const orderId = generateOrderId();

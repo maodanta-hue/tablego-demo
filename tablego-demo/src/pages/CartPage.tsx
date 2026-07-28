@@ -21,7 +21,7 @@ export default function CartPage() {
     if (isSubmitting) return;
     
     setIsSubmitting(true);
-    const orderId = submitOrder();
+    const orderId = submitOrder(remark);
     if (orderId) {
       navigate(`/order-success?orderId=${orderId}&table=${encodeURIComponent(currentTable)}`);
     }

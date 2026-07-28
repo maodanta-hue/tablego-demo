@@ -1,3 +1,5 @@
+import type { CartTopping } from './cart';
+
 // 订单状态：pending → preparing → completed
 export type OrderStatus = 'pending' | 'preparing' | 'completed';
 
@@ -19,5 +21,8 @@ export interface OrderItem {
   name: { zh: string; en: string; vi: string };  // 三语名称
   price: number;
   quantity: number;
-  remark?: string;
+  temperature?: string;   // 冰量
+  sugar?: string;         // 甜度
+  toppings?: CartTopping[]; // 加料
+  remark?: string;        // 备注
 }
