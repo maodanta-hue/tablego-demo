@@ -10,19 +10,19 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#E53935] text-white hover:bg-[#C62828] active:bg-[#B71C1C] shadow-sm shadow-red-200',
+    'bg-[#1A6B3C] text-white hover:bg-[#0D4A2A] active:bg-[#0D4A2A] shadow-xs',
   secondary:
-    'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300',
+    'bg-[#F8F9FA] text-[#4A4A5A] hover:bg-[#EEEEF0] active:bg-[#E0E0E5]',
   outline:
-    'bg-white text-[#E53935] border border-[#E53935] hover:bg-red-50 active:bg-red-100',
+    'bg-white text-[#1A6B3C] border border-[#1A6B3C] hover:bg-[#E8F5E9] active:bg-[#C8E6C9]',
   ghost:
-    'bg-transparent text-gray-600 hover:bg-gray-100 active:bg-gray-200',
+    'bg-transparent text-[#4A4A5A] hover:bg-[#F8F9FA] active:bg-[#EEEEF0]',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'text-xs px-3 py-1.5 rounded-[10px]',
-  md: 'text-sm px-4 py-2.5 rounded-[12px] font-medium',
-  lg: 'text-base px-6 py-3.5 rounded-[14px] font-semibold',
+  sm: 'text-[11px] px-3 h-8 rounded-[8px]',
+  md: 'text-[14px] px-4 h-10 rounded-[12px] font-medium',
+  lg: 'text-[16px] px-6 h-12 rounded-[14px] font-semibold',
 };
 
 export default function Button({

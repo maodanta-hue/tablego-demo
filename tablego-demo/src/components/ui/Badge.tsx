@@ -1,6 +1,6 @@
 import React from 'react';
 
-type BadgeVariant = 'red' | 'orange' | 'blue' | 'green' | 'gray';
+type BadgeVariant = 'primary' | 'accent' | 'success' | 'warning' | 'gray';
 type BadgeSize = 'sm' | 'md';
 
 interface BadgeProps {
@@ -11,16 +11,16 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  red: 'bg-red-50 text-red-600',
-  orange: 'bg-orange-50 text-orange-600',
-  blue: 'bg-blue-50 text-blue-600',
-  green: 'bg-green-50 text-green-600',
-  gray: 'bg-gray-100 text-gray-600',
+  primary: 'bg-[#E8F5E9] text-[#1A6B3C]',
+  accent: 'bg-[#FBE9E7] text-[#D84315]',
+  success: 'bg-[#E8F5E9] text-[#1A6B3C]',
+  warning: 'bg-[#FEF3C7] text-[#F59E0B]',
+  gray: 'bg-[#F8F9FA] text-[#9A9AAB]',
 };
 
 const sizeClasses: Record<BadgeSize, string> = {
   sm: 'text-[11px] px-2 py-0.5',
-  md: 'text-xs px-2.5 py-1',
+  md: 'text-[12px] px-2.5 py-1',
 };
 
 export default function Badge({

@@ -11,6 +11,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { getRestaurantInfo } from '../../store/restaurantStore';
 import { localizedText } from '../../utils/i18n';
 import { useState } from 'react';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 interface Props {
   tableNo: string;
@@ -50,7 +51,7 @@ export default function RestaurantHeader({
       </div>
 
       {/* === 第二行：营业状态 + 桌号 + 🌐语言切换（右上角） === */}
-      <div className="flex items-center px-4 py-1">
+      <div className="relative flex items-center justify-between px-4 py-1">
         <div className="flex items-center gap-4">
           <span className="text-[12px] text-[#2E7D32] font-medium">
             ● {t('openNow') || 'Open Now'}
@@ -59,6 +60,7 @@ export default function RestaurantHeader({
             {t('table') || 'Table'} {tableNo}
           </span>
         </div>
+        <LanguageSwitcher minimal />
       </div>
 
       {/* === 第三行：Tab 切换（Menu / My Orders） === */}
