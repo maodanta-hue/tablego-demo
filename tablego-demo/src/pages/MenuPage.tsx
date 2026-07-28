@@ -52,6 +52,12 @@ export default function MenuPage() {
   // Search
   const [searchQuery, setSearchQuery] = useState('');
 
+  // 语言变化时强制重新渲染（Vercel 生产环境兜底）
+  const [renderKey, setRenderKey] = useState(0);
+  useEffect(() => {
+    setRenderKey((prev) => prev + 1);
+  }, [language]);
+
   // 规格弹窗状态
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isSpecModalOpen, setIsSpecModalOpen] = useState(false);
@@ -107,7 +113,7 @@ export default function MenuPage() {
   );
 
   return (
-    <div className="flex flex-col h-screen bg-[#F5F5F5] max-w-lg mx-auto relative">
+    <div key={renderKey} className="flex flex-col h-screen bg-[#F5F5F5] max-w-lg mx-auto relative">
       {/* === 顶部固定区域 === */}
       <RestaurantHeader
         tableNo={currentTable}
