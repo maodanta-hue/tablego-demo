@@ -9,7 +9,7 @@
  * - 规格弹窗：Bottom Sheet 样式
  */
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useOrder } from '../context/OrderContext';
 import { getCategories } from '../store/categoryStore';
@@ -22,12 +22,12 @@ import ProductCard from '../components/customer/ProductCard';
 import BottomCart from '../components/customer/BottomCart';
 import OrderCard from '../components/customer/OrderCard';
 import SpecModal from '../components/ui/SpecModal';
+import CartDrawer from '../components/customer/CartDrawer';
 import type { MenuItem } from '../types/menu';
 import type { CartTopping } from '../types/cart';
 
 export default function MenuPage() {
   const { language } = useLanguage();
-  const navigate = useNavigate();
   const location = useLocation();
   const { addToCart, cartCount, currentTable, updateTrigger } = useOrder();
   void updateTrigger; // 确保强制更新时底部购物车条价格刷新
@@ -61,6 +61,9 @@ export default function MenuPage() {
   // 规格弹窗状态
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isSpecModalOpen, setIsSpecModalOpen] = useState(false);
+
+  // 购物车抽屉状态
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const productListRef = useRef<HTMLDivElement>(null);
 
@@ -220,7 +223,7 @@ export default function MenuPage() {
 
       {/* === 底部购物车条 — 只在菜单 Tab 有商品时显示 === */}
       {activeTab === 'menu' && cartCount > 0 && (
-        <BottomCart onReviewOrder={() => navigate('/cart')} />
+        <BottomCart onReviewOrder={() => setIsCartOpen(true)} />
       )}
 
       {/* === 规格弹窗（Bottom Sheet） === */}
@@ -232,6 +235,9 @@ export default function MenuPage() {
           onAddToCart={handleAddToCartWithSpec}
         />
       )}
+
+      {/* === 购物车底部弹出 === */}
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
 }

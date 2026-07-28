@@ -42,24 +42,27 @@ export default function WelcomePage() {
     <div className="flex flex-col items-center justify-between min-h-[calc(100vh-56px)] px-6 py-8">
       {/* 上部：品牌区 */}
       <div className="flex flex-col items-center w-full">
-        {/* Logo — 加大 */}
-        <div className="w-28 h-28 rounded-[20px] bg-[#1A6B3C] shadow-lg flex items-center justify-center mb-6">
-          <span className="text-5xl">🍜</span>
+        {/* 品牌渐变头图 */}
+        <div className="w-full max-w-sm rounded-[20px] bg-gradient-to-br from-[#1A6B3C] to-[#0D4A2A] px-6 py-8 mb-8 flex flex-col items-center shadow-[0_4px_16px_rgba(26,107,60,0.25)]">
+          {/* Logo — 白色背景 */}
+          <div className="w-20 h-20 rounded-[16px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex items-center justify-center mb-5">
+            <span className="text-[40px] leading-none">🍜</span>
+          </div>
+
+          {/* 标题 — 白色 */}
+          <h1 className="text-[24px] font-bold text-white text-center leading-snug mb-1.5">
+            {t('welcome.title')}
+          </h1>
+
+          {/* 标语 — 白色/80 */}
+          <p className="text-[14px] text-white/80 text-center max-w-xs">
+            {t('welcome.subtitle')}
+          </p>
         </div>
-
-        {/* 标题 — H1 24px Bold */}
-        <h1 className="text-[24px] font-bold text-[#1A1A2E] text-center leading-snug mb-2">
-          {t('welcome.title')}
-        </h1>
-
-        {/* 标语 — Body 14px */}
-        <p className="text-[14px] text-[#9A9AAB] text-center max-w-xs mb-6">
-          {t('welcome.subtitle')}
-        </p>
 
         {/* 扫码示意卡片 — 主色浅背景 */}
         <div className="w-full max-w-sm bg-[#E8F5E9] rounded-[16px] border border-[#C8E6C9] px-5 py-4 mb-6 flex items-center gap-4">
-          <div className="w-14 h-14 bg-white rounded-[12px] shadow-xs flex items-center justify-center shrink-0">
+          <div className="w-14 h-14 bg-white rounded-[12px] shadow-[0_1px_2px_rgba(0,0,0,0.04)] flex items-center justify-center shrink-0">
             <span className="text-3xl">📱</span>
           </div>
           <div className="flex-1 min-w-0">

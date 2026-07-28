@@ -23,7 +23,7 @@ export default function BottomCart({ onReviewOrder }: Props) {
   if (cartCount === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.06)] safe-area-bottom">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-[20px] shadow-[0_-2px_8px_rgba(0,0,0,0.06)] safe-area-bottom">
       <div className="max-w-[430px] mx-auto px-4 py-3 flex items-center gap-4">
         {/* Left: Cart Icon with Red Badge */}
         <div className="relative flex-shrink-0">
@@ -50,9 +50,10 @@ export default function BottomCart({ onReviewOrder }: Props) {
         {/* Right: Review Order Button — adjusted height */}
         <button
           onClick={onReviewOrder}
-          className="h-[44px] px-5 rounded-[12px] bg-[#D84315] text-white font-semibold text-[14px]
-                     hover:bg-[#BF360C] active:scale-[0.97] transition-all duration-200
-                     shadow-sm flex items-center gap-2 flex-shrink-0"
+          className="h-[44px] px-5 rounded-[12px] text-white font-semibold text-[14px]
+                     bg-gradient-to-br from-[#D84315] to-[#BF360C]
+                     hover:from-[#BF360C] hover:to-[#A5300F] active:scale-[0.97] transition-all duration-200
+                     shadow-[0_4px_12px_rgba(216,67,21,0.35)] flex items-center gap-2 flex-shrink-0"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

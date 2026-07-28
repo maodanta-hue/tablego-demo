@@ -2,10 +2,11 @@
  * SpecModal — 柠香小筑规格弹窗 (Bottom Sheet 样式)
  *
  * - 从底部滑出，顶部圆角 20px
- * - 拖拽手柄 + 半透明遮罩
+ * - 拖拽手柄 + 毛玻璃遮罩
  * - 规格/甜度/冰量/加料 圆角选项按钮
  * - 数量加减圆形按钮 + 总价
  * - "加入购物车" 按钮（主色填充）
+ * - 品牌色系：#1A6B3C（主色）、#D84315（强调色）
  *
  * 注意：弹窗关闭由父组件控制（不再使用 setTimeout）
  */
@@ -164,9 +165,9 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
 
   return (
     <>
-      {/* 半透明遮罩 */}
+      {/* 毛玻璃遮罩 */}
       <div
-        className="fixed inset-0 z-50 bg-black/40 transition-opacity"
+        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[8px] transition-opacity"
         onClick={onClose}
       />
 
@@ -200,7 +201,7 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
               <h2 className="text-[16px] font-semibold text-[#1A1A1A] leading-tight">
                 {localizedText(item.name, language)}
               </h2>
-              <p className="text-[16px] font-bold text-[#E53935] mt-1">
+              <p className="text-[16px] font-bold text-[#D84315] mt-1">
                 {t('app.currency')}{item.price.toLocaleString()}
               </p>
             </div>
@@ -228,9 +229,9 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
                         onClick={() => handleSelect(group.id, option.id)}
                         className={`
                           px-4 py-2 rounded-[10px] text-[13px] font-medium
-                          transition-all duration-150
+                          transition-all duration-150 active:scale-[0.95]
                           ${isSelected
-                            ? 'bg-[#2E7D32] text-white shadow-sm'
+                            ? 'bg-[#1A6B3C] text-white shadow-sm'
                             : 'bg-gray-100 text-[#666666] hover:bg-gray-200'
                           }
                         `}
@@ -267,7 +268,7 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
               </span>
               <button
                 onClick={() => setQuantity(q => q + 1)}
-                className="w-9 h-9 rounded-full bg-[#E8F5E9] text-[#2E7D32] text-lg font-bold
+                className="w-9 h-9 rounded-full bg-[#E8F5E9] text-[#1A6B3C] text-lg font-bold
                            hover:bg-[#C8E6C9] active:scale-90 transition-all flex items-center justify-center"
               >
                 +
@@ -281,7 +282,7 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
               <span className="text-[13px] text-[#999999]">
                 {t('total') || 'Tổng cộng'}:
               </span>
-              <span className="ml-2 text-[20px] font-bold text-[#E53935]">
+              <span className="ml-2 text-[20px] font-bold text-[#D84315]">
                 {t('app.currency')}{totalPrice.toLocaleString()}
               </span>
             </div>
@@ -292,7 +293,7 @@ export default function SpecModal({ item, open, onClose, onAddToCart }: Props) {
                 px-6 py-3 rounded-[12px] text-[15px] font-semibold
                 transition-all duration-200
                 ${isAllRequired()
-                  ? 'bg-[#E53935] text-white shadow-[0_4px_12px_rgba(229,57,53,0.25)] hover:bg-[#C62828] active:scale-[0.97]'
+                  ? 'bg-[#D84315] text-white shadow-[0_4px_12px_rgba(216,67,21,0.3)] hover:bg-[#BF360C] active:scale-[0.97]'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }
               `}

@@ -40,7 +40,7 @@ export default function CategorySidebar({ categories, activeId, onSelect }: Prop
               {/* Icon */}
               <span
                 className={`
-                  text-xl mb-1.5 transition-transform duration-150
+                  text-[24px] mb-1.5 transition-transform duration-150
                   ${isActive ? 'scale-110' : ''}
                 `}
               >

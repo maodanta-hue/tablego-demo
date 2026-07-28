@@ -216,3 +216,34 @@ input[type="number"] {
 .animate-bounce-in {
   animation: bounceIn 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+/* ---- Fade In Up Animation ---- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ---- Stagger Animation for Card Lists ---- */
+.animate-stagger > * {
+  opacity: 0;
+  animation: fadeInUp 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.animate-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.animate-stagger > *:nth-child(2) { animation-delay: 50ms; }
+.animate-stagger > *:nth-child(3) { animation-delay: 100ms; }
+.animate-stagger > *:nth-child(4) { animation-delay: 150ms; }
+.animate-stagger > *:nth-child(5) { animation-delay: 200ms; }
+.animate-stagger > *:nth-child(6) { animation-delay: 250ms; }
+.animate-stagger > *:nth-child(7) { animation-delay: 300ms; }
+.animate-stagger > *:nth-child(8) { animation-delay: 350ms; }
+.animate-stagger > *:nth-child(9) { animation-delay: 400ms; }
+.animate-stagger > *:nth-child(10) { animation-delay: 450ms; }
