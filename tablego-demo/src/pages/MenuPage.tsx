@@ -113,7 +113,7 @@ export default function MenuPage() {
   );
 
   return (
-    <div key={renderKey} className="flex flex-col h-screen bg-[#F5F5F5] max-w-lg mx-auto relative">
+    <div key={renderKey} className="flex flex-col h-screen bg-[#F8F9FA] max-w-lg mx-auto relative">
       {/* === 顶部固定区域 === */}
       <RestaurantHeader
         tableNo={currentTable}
@@ -191,7 +191,7 @@ export default function MenuPage() {
         </div>
       ) : (
         /* 订单 Tab */
-        <div className="flex-1 overflow-y-auto bg-[#F5F5F5]">
+        <div className="flex-1 overflow-y-auto bg-[#F8F9FA]">
           {tableOrders.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-[#999999]">
               <span className="text-5xl mb-4">📋</span>

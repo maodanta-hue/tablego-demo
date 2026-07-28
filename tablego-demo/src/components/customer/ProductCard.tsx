@@ -1,13 +1,14 @@
 /**
- * ProductCard — 柠香小筑商品卡片
+ * ProductCard — 商业级商品卡片（美团/饿了么外卖风格）
  *
- * 布局：左图（80x80，圆角 12px）+ 右信息
- * - 名称：16px SemiBold
- * - 分类标签：12px 灰色
- * - 价格：16px Bold #E53935，格式 "¥13.00起"
- * - "选规格" 按钮：红色边框/填充，圆角 8px，文字 13px
- * 卡片间距 8px，分割线 #F0F0F0
+ * 布局：左图（80×80，圆角 L/16px）+ 右信息
+ * - 名称：18px Bold 文字主色 #1A1A2E
+ * - 分类标签：12px 文字灰 #9A9AAB
+ * - 月售 + 推荐理由：12px 文字灰
+ * - 价格：20px Bold 强调色 #D84315
+ * - "选规格" 按钮：主色填充，圆角 M/12px
  */
+import { useMemo } from 'react';
 import type { MenuItem } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { localizedText } from '../../utils/i18n';
@@ -17,7 +18,24 @@ interface Props {
   onAddToCart: (item: MenuItem) => void;
 }
 
-/** 根据分类 ID 返回 emoji 占位图 */
+// 根据商品 id 生成稳定的随机月售数据
+const getSalesData = (id: string) => {
+  const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const sales = 50 + (hash % 450);
+  const rank = (hash % 5) + 1;
+  const reasons = [
+    '门店销量第 1 名',
+    '回头客推荐',
+    '物有所值',
+    '味道鲜美',
+    '人气爆款',
+  ];
+  return {
+    sales: `${sales}+`,
+    reason: reasons[rank % reasons.length],
+  };
+};
+
 function categoryEmoji(categoryId: string): string {
   const map: Record<string, string> = {
     coffee: '☕',
@@ -30,20 +48,37 @@ function categoryEmoji(categoryId: string): string {
   return map[categoryId] || '🍽️';
 }
 
+function getCategoryLabel(
+  categoryId: string,
+  t: (key: string) => string,
+): string {
+  const keyMap: Record<string, string> = {
+    coffee: 'categoryCoffee',
+    tea: 'categoryTea',
+    milktea: 'categoryMilkTea',
+    dessert: 'categoryDessert',
+    food: 'categoryFood',
+    drink: 'categoryDrink',
+  };
+  const key = keyMap[categoryId];
+  return key ? t(key) : categoryId;
+}
+
 export default function ProductCard({ item, onAddToCart }: Props) {
   const { t, language } = useLanguage();
+  const salesData = useMemo(() => getSalesData(item.id), [item.id]);
 
   if (!item.available) {
     return (
-      <div className="flex gap-3 py-3 px-4 border-b border-[#F0F0F0] opacity-50">
-        <div className="w-[80px] h-[80px] rounded-[12px] bg-gray-200 flex items-center justify-center flex-shrink-0">
+      <div className="flex gap-4 py-4 px-4 border-b border-[#EEEEF0] opacity-50">
+        <div className="w-[80px] h-[80px] rounded-[16px] bg-[#F0F0F0] flex items-center justify-center flex-shrink-0">
           <span className="text-3xl">{categoryEmoji(item.categoryId)}</span>
         </div>
         <div className="flex-1 min-w-0 flex flex-col justify-center">
-          <h3 className="text-[16px] font-semibold text-[#999999] truncate">
+          <h3 className="text-[18px] font-bold text-[#9A9AAB] truncate">
             {localizedText(item.name, language)}
           </h3>
-          <p className="text-[13px] text-[#CCCCCC] mt-0.5">
+          <p className="text-[13px] text-[#BDBDC5] mt-0.5">
             {t('unavailable') || 'Đã hết'}
           </p>
         </div>
@@ -52,9 +87,9 @@ export default function ProductCard({ item, onAddToCart }: Props) {
   }
 
   return (
-    <div className="flex gap-3 py-3 px-4 border-b border-[#F0F0F0] last:border-b-0">
-      {/* === 左图 80×80 === */}
-      <div className="w-[80px] h-[80px] rounded-[12px] overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
+    <div className="flex gap-4 py-4 px-4 border-b border-[#EEEEF0] last:border-b-0 bg-white hover:bg-[#F8F9FA]/50 transition-colors">
+      {/* 左图 80×80 — 圆角 L/16px */}
+      <div className="w-[80px] h-[80px] rounded-[16px] overflow-hidden bg-[#F0F0F0] flex-shrink-0 flex items-center justify-center">
         {item.image ? (
           <img
             src={item.image}
@@ -66,26 +101,32 @@ export default function ProductCard({ item, onAddToCart }: Props) {
             }}
           />
         ) : (
-          <span className="text-4xl">{categoryEmoji(item.categoryId)}</span>
+          <span className="text-3xl">{categoryEmoji(item.categoryId)}</span>
         )}
       </div>
 
-      {/* === 右信息 === */}
+      {/* 右信息区 */}
       <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-        {/* 名称 */}
-        <h3 className="text-[16px] font-semibold text-[#1A1A1A] leading-tight truncate">
+        {/* 名称 — 18px Bold */}
+        <h3 className="text-[18px] font-bold text-[#1A1A2E] leading-tight truncate">
           {localizedText(item.name, language)}
         </h3>
 
-        {/* 分类标签（从 categoryId 映射） */}
-        <p className="text-[12px] text-[#999999] mt-0.5">
+        {/* 分类标签 — Caption 12px */}
+        <p className="text-[12px] text-[#9A9AAB] mt-0.5">
           {getCategoryLabel(item.categoryId, t)}
         </p>
 
+        {/* 月售 + 推荐理由 — 12px 文字灰 */}
+        <p className="text-[12px] text-[#9A9AAB] mt-0.5">
+          月售 {salesData.sales} · {salesData.reason}
+        </p>
+
         {/* 底部：价格 + 按钮 */}
-        <div className="flex items-center justify-between mt-1">
-          <span className="text-[16px] font-bold text-[#E53935]">
-            {t('app.currency')}{item.price.toLocaleString()}
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-[20px] font-bold text-[#D84315]">
+            {t('app.currency')}
+            {item.price.toLocaleString()}
           </span>
 
           <button
@@ -93,10 +134,10 @@ export default function ProductCard({ item, onAddToCart }: Props) {
               e.stopPropagation();
               onAddToCart(item);
             }}
-            className="px-4 py-1.5 rounded-[8px] text-[13px] font-semibold
-                       border border-[#E53935] text-[#E53935] bg-white
-                       hover:bg-[#E53935] hover:text-white
-                       active:scale-95 transition-all duration-150"
+            className="px-4 py-1.5 rounded-[12px] text-[13px] font-semibold
+                       bg-[#1A6B3C] text-white
+                       hover:bg-[#0D4A2A]
+                       active:scale-95 transition-all duration-150 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
           >
             {t('selectSpec') || 'Chọn'}
           </button>
@@ -104,18 +145,4 @@ export default function ProductCard({ item, onAddToCart }: Props) {
       </div>
     </div>
   );
-}
-
-/** 分类 ID → 多语言标签 */
-function getCategoryLabel(categoryId: string, t: (key: string) => string): string {
-  const keyMap: Record<string, string> = {
-    coffee: 'categoryCoffee',
-    tea: 'categoryTea',
-    milktea: 'categoryMilkTea',
-    dessert: 'categoryDessert',
-    food: 'categoryFood',
-    drink: 'categoryDrink',
-  };
-  const key = keyMap[categoryId];
-  return key ? t(key) : categoryId;
 }

@@ -1,8 +1,12 @@
 /**
- * 欢迎页（首页）
- * - 餐厅 Logo、名称、欢迎语
- * - 从 storage 动态读取桌号列表（新版）
- * - 底部语言切换（旧版风格）
+ * 欢迎页（首页）— 商业级桌号选择（参考瑞幸首页）
+ *
+ * - 品牌 Logo 区域加大
+ * - 餐厅名 H1（24px Bold）
+ * - 标语 Body（14px 灰色）
+ * - 桌号卡片：圆角 L/16px，阴影 XS，悬浮 S
+ * - 语言切换按钮使用主色
+ * - 从 storage 动态读取桌号列表
  * - 老板端入口
  */
 import { useState, useEffect } from 'react';
@@ -38,42 +42,43 @@ export default function WelcomePage() {
     <div className="flex flex-col items-center justify-between min-h-[calc(100vh-56px)] px-6 py-8">
       {/* 上部：品牌区 */}
       <div className="flex flex-col items-center w-full">
-        {/* Logo */}
-        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-green-500 to-green-700 shadow-lg shadow-green-200 flex items-center justify-center mb-5">
+        {/* Logo — 加大 */}
+        <div className="w-28 h-28 rounded-[20px] bg-[#1A6B3C] shadow-lg flex items-center justify-center mb-6">
           <span className="text-5xl">🍜</span>
         </div>
 
-        {/* 标题 */}
-        <h1 className="text-2xl font-bold text-gray-800 text-center leading-snug mb-2">
+        {/* 标题 — H1 24px Bold */}
+        <h1 className="text-[24px] font-bold text-[#1A1A2E] text-center leading-snug mb-2">
           {t('welcome.title')}
         </h1>
 
-        <p className="text-sm text-gray-500 text-center max-w-xs mb-6">
+        {/* 标语 — Body 14px */}
+        <p className="text-[14px] text-[#9A9AAB] text-center max-w-xs mb-6">
           {t('welcome.subtitle')}
         </p>
 
-        {/* 扫码示意卡片 */}
-        <div className="w-full max-w-sm bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100 px-5 py-4 mb-6 flex items-center gap-4">
-          <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0">
+        {/* 扫码示意卡片 — 主色浅背景 */}
+        <div className="w-full max-w-sm bg-[#E8F5E9] rounded-[16px] border border-[#C8E6C9] px-5 py-4 mb-6 flex items-center gap-4">
+          <div className="w-14 h-14 bg-white rounded-[12px] shadow-xs flex items-center justify-center shrink-0">
             <span className="text-3xl">📱</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-green-800 mb-0.5">Scan QR Code</p>
-            <p className="text-xs text-green-600 leading-relaxed">
+            <p className="text-[14px] font-semibold text-[#1A6B3C] mb-0.5">Scan QR Code</p>
+            <p className="text-[12px] text-[#4A4A5A] leading-relaxed">
               {t('app.tagline')}
             </p>
           </div>
         </div>
 
-        {/* 桌号选择 - 新版动态加载 */}
+        {/* 桌号选择 — 商业级网格 */}
         <div className="w-full max-w-sm mb-6">
           {tables.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
-              <p>暂无桌号，请先在后台添加</p>
+            <div className="text-center py-8 text-[#9A9AAB]">
+              <p className="text-[14px]">暂无桌号，请先在后台添加</p>
             </div>
           ) : (
             <>
-              <p className="text-xs text-gray-400 text-center mb-3">
+              <p className="text-[12px] text-[#9A9AAB] text-center mb-3">
                 📲 {activeTables.length} 个可用桌号
                 {disabledTables.length > 0 && ` · ${disabledTables.length} 个已停用`}
               </p>
@@ -82,10 +87,11 @@ export default function WelcomePage() {
                   <button
                     key={table.id}
                     onClick={() => handleEnterMenu(table.number)}
-                    className="w-full py-4 px-6 rounded-2xl bg-white border-2 border-green-200
-                               text-green-700 font-bold text-base
-                               shadow-sm hover:shadow-md hover:border-green-400 hover:bg-green-50
-                               active:scale-[0.97] transition-all duration-200
+                    className="w-full py-4 px-6 rounded-[16px] bg-white border border-[#EEEEF0]
+                               text-[#1A6B3C] font-semibold text-[16px]
+                               shadow-[0_1px_2px_rgba(0,0,0,0.04)]
+                               hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:border-[#1A6B3C]
+                               active:scale-[0.97] transition-all duration-150
                                flex items-center justify-center gap-2"
                   >
                     <span>🍽️</span>
@@ -95,8 +101,8 @@ export default function WelcomePage() {
                 {disabledTables.map((table) => (
                   <div
                     key={table.id}
-                    className="w-full py-4 px-6 rounded-2xl bg-gray-50 border-2 border-gray-200
-                               text-gray-300 text-base font-bold
+                    className="w-full py-4 px-6 rounded-[16px] bg-[#F8F9FA] border border-[#EEEEF0]
+                               text-[#BDBDC5] text-[16px] font-semibold
                                flex items-center justify-center gap-2 cursor-not-allowed"
                   >
                     <span>🚫</span>
@@ -109,10 +115,10 @@ export default function WelcomePage() {
         </div>
       </div>
 
-      {/* 下部：语言切换 */}
+      {/* 下部：语言切换 — 主色按钮风格 */}
       <div className="flex flex-col items-center w-full max-w-sm">
         <div className="w-full mb-4">
-          <p className="text-xs text-gray-400 text-center mb-3">🌐 Language</p>
+          <p className="text-[12px] text-[#9A9AAB] text-center mb-3">🌐 Language</p>
           <LanguageSwitcher />
         </div>
       </div>
